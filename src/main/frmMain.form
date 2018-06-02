@@ -84,9 +84,6 @@
             </Component>
             <Component class="javax.swing.JButton" name="btnProduct">
               <Properties>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/images/supplierMaster 30x30.jpg"/>
-                </Property>
                 <Property name="text" type="java.lang.String" value="PRODUCT"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="4"/>

@@ -108,7 +108,6 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel2.add(btnSupplier, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 240, 100));
 
-        btnProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/supplierMaster 30x30.jpg"))); // NOI18N
         btnProduct.setText("PRODUCT");
         btnProduct.setFocusable(false);
         btnProduct.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
