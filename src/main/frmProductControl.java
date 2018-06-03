@@ -11,28 +11,28 @@ import static main.frmLogin.showUserName;
 import net.proteanit.sql.DbUtils;
 
 public class frmProductControl extends javax.swing.JFrame {
-ResultSet rs;
-Connection conn;
-PreparedStatement pstmt;
+//ResultSet dbConn.rs;
+//Connection conn;
+//PreparedStatement dbConn.pstmt;
 boolean add, edit;
 String getAccountName,tblClick;
 int getMaxID;
 int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
-
+dbConnection dbConn = new dbConnection();
     public frmProductControl() {
         initComponents();
-        doConnect();
+        dbConn.doConnect();
         fillTable();
         setDefaultCloseOperation(frmProductControl.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
     }
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
@@ -46,14 +46,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -61,23 +61,23 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void fillTable(){
         try{
             String fillUserTable = "Select * from tblProductCategory";
-            pstmt = conn.prepareStatement(fillUserTable);
-            rs = pstmt.executeQuery();
-            tblProductControl.setModel(DbUtils.resultSetToTableModel(rs));
+            dbConn.pstmt = dbConn.conn.prepareStatement(fillUserTable);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblProductControl.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             tblProductControl.getColumnModel().getColumn(0).setHeaderValue("ID");
             tblProductControl.getColumnModel().getColumn(1).setHeaderValue("CATEGORY");
         }catch(SQLException e){
             e.getMessage();
         }
     }
-    private void doConnect(){
-    try{
-        Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
-    }catch (SQLException | ClassNotFoundException e){
-        e.getMessage();
-    }
-}
+//    private void doConnect(){
+//    try{
+//        Class.forName("com.mysql.jdbc.Driver");
+//        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+//    }catch (SQLException | ClassNotFoundException e){
+//        e.getMessage();
+//    }
+//}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -89,8 +89,6 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblProductControl = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtCategory = new javax.swing.JTextField();
@@ -98,12 +96,83 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblProductControl = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(214, 214, 194));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel2.setBackground(new java.awt.Color(214, 214, 194));
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("CATEGORY:");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 158, 48));
+        jPanel2.add(txtCategory, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 100, 450, 48));
+
+        btnCancel.setBackground(new java.awt.Color(255, 255, 255));
+        btnCancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnCancel.setForeground(new java.awt.Color(0, 0, 0));
+        btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/closeIcon.png"))); // NOI18N
+        btnCancel.setText("CANCEL");
+        btnCancel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnCancel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, 80, 70));
+
+        btnAdd.setBackground(new java.awt.Color(255, 255, 255));
+        btnAdd.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnAdd.setForeground(new java.awt.Color(0, 0, 0));
+        btnAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/NewIcon.png"))); // NOI18N
+        btnAdd.setText("ADD");
+        btnAdd.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnAdd.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 10, 70, 70));
+
+        btnEdit.setBackground(new java.awt.Color(255, 255, 255));
+        btnEdit.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnEdit.setForeground(new java.awt.Color(0, 0, 0));
+        btnEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/EditIcon.png"))); // NOI18N
+        btnEdit.setText("EDIT");
+        btnEdit.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnEdit.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, 70, 70));
+
+        btnSave.setBackground(new java.awt.Color(255, 255, 255));
+        btnSave.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnSave.setForeground(new java.awt.Color(0, 0, 0));
+        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/SaveIcon.png"))); // NOI18N
+        btnSave.setText("SAVE");
+        btnSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 10, 70, 70));
+
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 720, 170));
 
         tblProductControl.setBackground(new java.awt.Color(214, 214, 194));
         tblProductControl.setModel(new javax.swing.table.DefaultTableModel(
@@ -124,78 +193,9 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         });
         jScrollPane1.setViewportView(tblProductControl);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 720, 180));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 720, 180));
 
-        jPanel2.setBackground(new java.awt.Color(214, 214, 194));
-        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("CATEGORY:");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 158, 48));
-        jPanel2.add(txtCategory, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, 450, 48));
-
-        btnCancel.setBackground(new java.awt.Color(255, 255, 255));
-        btnCancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnCancel.setForeground(new java.awt.Color(0, 0, 0));
-        btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cancelButton.jpg"))); // NOI18N
-        btnCancel.setText("CANCEL");
-        btnCancel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnCancel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
-            }
-        });
-        jPanel2.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 90, 70, 60));
-
-        btnAdd.setBackground(new java.awt.Color(255, 255, 255));
-        btnAdd.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnAdd.setForeground(new java.awt.Color(0, 0, 0));
-        btnAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/NewIcon.png"))); // NOI18N
-        btnAdd.setText("ADD");
-        btnAdd.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnAdd.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddActionPerformed(evt);
-            }
-        });
-        jPanel2.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 70, 60));
-
-        btnEdit.setBackground(new java.awt.Color(255, 255, 255));
-        btnEdit.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnEdit.setForeground(new java.awt.Color(0, 0, 0));
-        btnEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/EditIcon.png"))); // NOI18N
-        btnEdit.setText("EDIT");
-        btnEdit.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnEdit.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnEdit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditActionPerformed(evt);
-            }
-        });
-        jPanel2.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 90, 70, 60));
-
-        btnSave.setBackground(new java.awt.Color(255, 255, 255));
-        btnSave.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnSave.setForeground(new java.awt.Color(0, 0, 0));
-        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/SaveIcon.png"))); // NOI18N
-        btnSave.setText("SAVE");
-        btnSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSaveActionPerformed(evt);
-            }
-        });
-        jPanel2.add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 90, 70, 60));
-
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 210, 720, 240));
-
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 760, 480));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 760, 380));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -216,10 +216,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }//GEN-LAST:event_btnEditActionPerformed
     private void getNextID(){
         try{
-            pstmt = conn.prepareStatement("SELECT pc_id from tblProductCategory order by pc_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxID = rs.getInt("pc_id");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT pc_id from tblProductCategory order by pc_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxID = dbConn.rs.getInt("pc_id");
                 getMaxID++;
             }else{
                 getMaxID =1;
@@ -233,10 +233,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         getNextID();
         if (add == true && edit == false){
             try{
-                pstmt = conn.prepareStatement("INSERT INTO tblProductCategory (pc_id, pc_name) values (?,?)");
-                pstmt.setInt(1, getMaxID);
-                pstmt.setString(2, txtCategory.getText());
-                pstmt.execute();
+                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblProductCategory (pc_id, pc_name) values (?,?)");
+                dbConn.pstmt.setInt(1, getMaxID);
+                dbConn.pstmt.setString(2, txtCategory.getText());
+                dbConn.pstmt.execute();
                 JOptionPane.showMessageDialog(this, "PRODUCT CATEGORY SAVED");
                 fillTable();
                 saveAuditTrail("SAVED PRODUCT CATEGORY: " + txtCategory.getText());
@@ -250,10 +250,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         }else if(add ==false && edit == true){
             
             try{
-                pstmt = conn.prepareStatement("UPDATE tblProductCategory set pc_name=? where pc_id=?");
-                pstmt.setString(1, txtCategory.getText());
-                pstmt.setInt(2, Integer.valueOf(tblClick));
-                pstmt.executeUpdate();
+                dbConn.pstmt = dbConn.conn.prepareStatement("UPDATE tblProductCategory set pc_name=? where pc_id=?");
+                dbConn.pstmt.setString(1, txtCategory.getText());
+                dbConn.pstmt.setInt(2, Integer.valueOf(tblClick));
+                dbConn.pstmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "PRODUCT CATEGORY UPDATED");
                 fillTable();
                 saveAuditTrail("EDITED PRODUCT CATEGORY: " + txtCategory.getText());
@@ -271,13 +271,13 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             tblClick = (tblProductControl.getModel().getValueAt(ba, 0).toString());
             String tableQuery = "Select * from tblProductCategory where pc_id=?";
-            pstmt = conn.prepareStatement(tableQuery);
-            pstmt.setString(1,tblClick);
-            rs =pstmt.executeQuery();
-            if (rs.next()){
-                txtCategory.setText(rs.getString("pc_name"));
+            dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
+            dbConn.pstmt.setString(1,tblClick);
+            dbConn.rs =dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                txtCategory.setText(dbConn.rs.getString("pc_name"));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }

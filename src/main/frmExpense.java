@@ -14,17 +14,18 @@ import static main.frmLogin.showUserName;
 import net.proteanit.sql.DbUtils;
 
 public class frmExpense extends javax.swing.JFrame {
-ResultSet rs;
-Connection conn;
-PreparedStatement pstmt;
+//ResultSet dbConn.rs;
+//Connection conn;
+//PreparedStatement pstmt;
 SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
 DecimalFormat dfo = new DecimalFormat("0.000");
 int getMaxExpenseID;
 int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+dbConnection dbConn = new dbConnection();
     public frmExpense() {
         initComponents();
-        doConnect();
+        dbConn.doConnect();
         fillTable();
         txtComment.setLineWrap(true);
         txtComment.setWrapStyleWord(true);
@@ -33,10 +34,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
@@ -50,24 +51,24 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
     }
     private void fillTable(){
         try{
-            pstmt = conn.prepareStatement("Select * from tblExpense order by ex_date DESC");
-            rs = pstmt.executeQuery();
-            tblExpense.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblExpense order by ex_date DESC");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblExpense.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
                 tblExpense.getColumnModel().getColumn(0).setHeaderValue("ID");
                 tblExpense.getColumnModel().getColumn(1).setHeaderValue("AMOUNT");
                 tblExpense.getColumnModel().getColumn(2).setHeaderValue("COMMENT");
@@ -76,14 +77,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             e.getMessage();
         }            
     }
-    private void doConnect(){
-    try{
-        Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
-    }catch(SQLException | ClassNotFoundException e){
-        JOptionPane.showMessageDialog(this, e.getMessage());
-    }
-    }
+//    private void doConnect(){
+//    try{
+//        Class.forName("com.mysql.jdbc.Driver");
+//        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+//    }catch(SQLException | ClassNotFoundException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -220,15 +221,15 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }//GEN-LAST:event_tblExpenseMouseClicked
     private void getNextExpenseID(){
         try{
-            pstmt = conn.prepareStatement("SELECT ex_id from tblExpense order by ex_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxExpenseID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT ex_id from tblExpense order by ex_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxExpenseID = dbConn.rs.getInt(1);
                 getMaxExpenseID++;
             }else{
                 getMaxExpenseID =1;
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -236,15 +237,15 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         getNextExpenseID();
         try{
-             pstmt = conn.prepareStatement("INSERT INTO tblExpense(ex_id,ex_amount,ex_comment,ex_date)"
+             dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblExpense(ex_id,ex_amount,ex_comment,ex_date)"
                     + "values(?,?,?,?)");
-             pstmt.setInt(1, getMaxExpenseID);
-             pstmt.setDouble(2,Double.valueOf(txtAmount.getText()));
-             pstmt.setString(3, txtComment.getText());
+             dbConn.pstmt.setInt(1, getMaxExpenseID);
+             dbConn.pstmt.setDouble(2,Double.valueOf(txtAmount.getText()));
+             dbConn.pstmt.setString(3, txtComment.getText());
              Date getTheDate = datePicker.getDate();
-             pstmt.setString(4, String.valueOf(df.format(getTheDate)));
-             pstmt.execute();
-             pstmt.close();
+             dbConn.pstmt.setString(4, String.valueOf(df.format(getTheDate)));
+             dbConn.pstmt.execute();
+             dbConn.pstmt.close();
              JOptionPane.showMessageDialog(this, "EXPENSE SAVED");             
             saveAuditTrail("PROCESSED EXPENSE FOR : " + getMaxExpenseID + " " + txtComment.getText());
              txtAmount.setText("");

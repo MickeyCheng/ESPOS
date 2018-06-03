@@ -30,9 +30,10 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.view.JasperViewer;
 
 public class frmPurchaseOrder extends javax.swing.JFrame {
-ResultSet rs;
-Connection conn;
-PreparedStatement pstmt;
+//ResultSet dbConn.rs;
+//Connection conn;
+//PreparedStatement dbConn.pstmt;
+dbConnection dbConn = new dbConnection();
 int showOrderQty =0, getMaxLPOid,getMaxExpenseID;
 String getSupPrice,getPOStatus;
 SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -41,7 +42,7 @@ int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     public frmPurchaseOrder() {
         initComponents();
-        doConnect();
+        dbConn.doConnect();
         fillTable();
         setLocationRelativeTo(null);
         tableMinimum.setAutoCreateRowSorter(true);
@@ -68,10 +69,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
@@ -85,14 +86,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -100,11 +101,11 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     
     private void fillLPOPayment(){
         try{
-            pstmt = conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount,po_lpoDate from tblPurchaseOrder"
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount,po_lpoDate from tblPurchaseOrder"
                     + " order by po_lpoDate");
-            rs = pstmt.executeQuery();
-            tblLPOPayment.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblLPOPayment.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             tblLPOPayment.getColumnModel().getColumn(0).setHeaderValue("LPO");
             tblLPOPayment.getColumnModel().getColumn(1).setHeaderValue("SUPPLIER");
             tblLPOPayment.getColumnModel().getColumn(2).setHeaderValue("RECEIVED");
@@ -117,12 +118,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void fillComboSupplier(){
         cmbSupplier.removeAllItems();
         try{
-            pstmt = conn.prepareStatement("select sm_name from tblSupplierMaster order by sm_name");
-            rs = pstmt.executeQuery();
-            while (rs.next()){
-                cmbSupplier.addItem(rs.getString("sm_name"));
+            dbConn.pstmt = dbConn.conn.prepareStatement("select sm_name from tblSupplierMaster order by sm_name");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            while (dbConn.rs.next()){
+                cmbSupplier.addItem(dbConn.rs.getString("sm_name"));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
             cmbSupplier.setSelectedIndex(-1);
         }catch(SQLException e){
             e.getMessage();
@@ -130,14 +131,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void listenToTextItem(){
         try{
-            pstmt = conn.prepareStatement("SELECT productId,productName,"
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,"
                     + "stockOnHand,supplier from tblProduct where productName like ?");
-            pstmt.setString(1, "%"+ txtItem.getText() + "%");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                cmbSupplier.setSelectedItem(rs.getString("supplier"));
+            dbConn.pstmt.setString(1, "%"+ txtItem.getText() + "%");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                cmbSupplier.setSelectedItem(dbConn.rs.getString("supplier"));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }  
@@ -149,22 +150,22 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         tableMinimum.getColumnModel().getColumn(3).setHeaderValue("SUPPLIER");
         tableMinimum.getColumnModel().getColumn(4).setHeaderValue("PRICE");
 //        try{
-//            pstmt = conn.prepareStatement("SELECT productId,productName,supplier,supplier2,supplierPrice "
+//            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,supplier,supplier2,supplierPrice "
 //                    + "from tblProduct order by category");
-//            rs = pstmt.executeQuery();
-//            tableMinimum.setModel(DbUtils.resultSetToTableModel(rs));
+//            dbConn.rs = dbConn.pstmt.executeQuery();
+//            tableMinimum.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
 //        }catch(SQLException e){
 //            e.getMessage();
 //        }
     }    
-    private void doConnect(){
-    try{
-        Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
-    }catch(SQLException | ClassNotFoundException e){
-        JOptionPane.showMessageDialog(this, e.getMessage());
-    }
-    }
+//    private void doConnect(){
+//    try{
+//        Class.forName("com.mysql.jdbc.Driver");
+//        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+//    }catch(SQLException | ClassNotFoundException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }
+//    }
     private void sortTable(){    
 
     tableMinimum.getColumnModel().getColumn(0).setHeaderValue("BARCODE");
@@ -720,15 +721,15 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         DefaultTableModel model = (DefaultTableModel)tableMinimum.getModel(); 
         try{
             String viewCriticalSQL = "Select * from tblProduct order by category";
-            pstmt = conn.prepareStatement(viewCriticalSQL);
-            rs = pstmt.executeQuery();
+            dbConn.pstmt = dbConn.conn.prepareStatement(viewCriticalSQL);
+            dbConn.rs = dbConn.pstmt.executeQuery();
             while(model.getRowCount()>0){
                 model.setRowCount(0);
             }
-            while(rs.next()){
-                String prodName = rs.getString("productName");
-                int getStock = rs.getInt("stockOnHand");
-                int getMinimum = rs.getInt("minimumOrder");
+            while(dbConn.rs.next()){
+                String prodName = dbConn.rs.getString("productName");
+                int getStock = dbConn.rs.getInt("stockOnHand");
+                int getMinimum = dbConn.rs.getInt("minimumOrder");
                  if (getStock<getMinimum){
                     Object[] adRow = {"",prodName,"","",getStock,getMinimum,""};
                     model.addRow(adRow);
@@ -761,10 +762,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 String getCategory="";   
           
             try{
-                pstmt = conn.prepareStatement("Select * from tblProduct where category=?");
-                pstmt.setString(1, getCategory);
-                rs = pstmt.executeQuery();
-                tableMinimum.setModel(DbUtils.resultSetToTableModel(rs));
+                dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where category=?");
+                dbConn.pstmt.setString(1, getCategory);
+                dbConn.rs = dbConn.pstmt.executeQuery();
+                tableMinimum.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
                 sortTable();
             }catch(SQLException e){
                 e.getMessage();
@@ -776,15 +777,15 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 //        String tblClick = (tableMinimum.getModel().getValueAt(ba, 1).toString());
 //        String selectedItemSQL = "Select * from tblProduct where productName=?";
 //        try{
-//            pstmt = conn.prepareStatement(selectedItemSQL);
-//            pstmt.setString(1, tblClick);
-//            rs = pstmt.executeQuery();
-//            if (rs.next()){
-//                lblName.setText(rs.getString("productName"));
-//                lblSoh.setText(String.valueOf(rs.getInt("stockOnHand")));
-//                lblCategory.setText(String.valueOf(rs.getString("category")));
-//                lblProductId.setText(rs.getString("productId"));
-//                getSupPrice = rs.getString("supplierPrice");
+//            dbConn.pstmt = dbConn.conn.prepareStatement(selectedItemSQL);
+//            dbConn.pstmt.setString(1, tblClick);
+//            dbConn.rs = dbConn.pstmt.executeQuery();
+//            if (dbConn.rs.next()){
+//                lblName.setText(dbConn.rs.getString("productName"));
+//                lblSoh.setText(String.valueOf(dbConn.rs.getInt("stockOnHand")));
+//                lblCategory.setText(String.valueOf(dbConn.rs.getString("category")));
+//                lblProductId.setText(dbConn.rs.getString("productId"));
+//                getSupPrice = dbConn.rs.getString("supplierPrice");
 //            }
 //            txtOrderQty.setText("");
 //        }catch(SQLException e){
@@ -867,16 +868,16 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 //            txtOrderQty.setText("");
 ////
 ////            try{
-////                pstmt = conn.prepareStatement("Select * from tblOrder order by transactionNumber DESC LIMIT 1");
-////                rs = pstmt.executeQuery();
-////                if (rs.next()){
-////                    int tranNumber = rs.getInt("transactionNumber");
+////                dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblOrder order by transactionNumber DESC LIMIT 1");
+////                dbConn.rs = dbConn.pstmt.executeQuery();
+////                if (dbConn.rs.next()){
+////                    int tranNumber = dbConn.rs.getInt("transactionNumber");
 ////                    tranNumber++;
 ////                    lblTranNumber.setText(String.valueOf(tranNumber));
 ////                }else{
 ////                    lblTranNumber.setText("1");
 ////                }
-////                pstmt.close();
+////                dbConn.pstmt.close();
 ////            }catch(SQLException e){
 ////                JOptionPane.showMessageDialog(this, e.getMessage());
 ////            }
@@ -886,16 +887,16 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void getTotalAmountLPO(){
         double getSumAmount,showTotalAmountLPO=0;
         for(int i =0; i<tableOrder.getRowCount();i++){
-            getSumAmount = Double.parseDouble(tableOrder.getValueAt(i,4).toString());
+            getSumAmount = Double.valueOf(tableOrder.getValueAt(i,4).toString());
             showTotalAmountLPO+= getSumAmount;
         }
         lblTotalAmount.setText(String.valueOf(dfo.format(showTotalAmountLPO)));
     }    private void getNextLPO(){
         try{
-            pstmt = conn.prepareStatement("Select po_Id from tblPurchaseOrder order by po_Id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxLPOid = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select po_Id from tblPurchaseOrder order by po_Id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxLPOid = dbConn.rs.getInt(1);
                 getMaxLPOid++;
             }else{
                 getMaxLPOid =1;
@@ -908,21 +909,21 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
         try{
             for(int i=0; i<tableOrder.getRowCount();i++){
-                pstmt = conn.prepareStatement("INSERT INTO tblPurchaseOrder (po_Id,po_prodSku,po_prodName,po_qtyOrder,po_supPrice,"
+                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblPurchaseOrder (po_Id,po_prodSku,po_prodName,po_qtyOrder,po_supPrice,"
                         + "po_totalPrice,po_userNameLPO,po_supplier,po_lpoDate,po_totalAmount,po_status) values(?,?,?,?,?,?,?,?,?,?,?)");
-                pstmt.setInt(1,getMaxLPOid);
-                pstmt.setString(2,tableOrder.getValueAt(i, 0).toString());
-                pstmt.setString(3,tableOrder.getValueAt(i, 1).toString());
-                pstmt.setInt(4,Integer.valueOf(tableOrder.getValueAt(i, 2).toString()));
-                pstmt.setDouble(5,Double.valueOf(tableOrder.getValueAt(i, 3).toString()));
-                pstmt.setDouble(6,Double.valueOf(tableOrder.getValueAt(i, 4).toString()));
-                pstmt.setString(7,frmLogin.showUserName);
-                pstmt.setString(8,cmbSupplier.getSelectedItem().toString());
-                pstmt.setString(9,String.valueOf(df.format(dateOrder.getDate())));
-                pstmt.setString(10,lblTotalAmount.getText());
-                pstmt.setString(11,"ORDERED");
-                pstmt.execute();
-                pstmt.close();
+                dbConn.pstmt.setInt(1,getMaxLPOid);
+                dbConn.pstmt.setString(2,tableOrder.getValueAt(i, 0).toString());
+                dbConn.pstmt.setString(3,tableOrder.getValueAt(i, 1).toString());
+                dbConn.pstmt.setInt(4,Integer.valueOf(tableOrder.getValueAt(i, 2).toString()));
+                dbConn.pstmt.setDouble(5,Double.valueOf(tableOrder.getValueAt(i, 3).toString()));
+                dbConn.pstmt.setDouble(6,Double.valueOf(tableOrder.getValueAt(i, 4).toString()));
+                dbConn.pstmt.setString(7,frmLogin.showUserName);
+                dbConn.pstmt.setString(8,cmbSupplier.getSelectedItem().toString());
+                dbConn.pstmt.setString(9,String.valueOf(df.format(dateOrder.getDate())));
+                dbConn.pstmt.setString(10,lblTotalAmount.getText());
+                dbConn.pstmt.setString(11,"ORDERED");
+                dbConn.pstmt.execute();
+                dbConn.pstmt.close();
             }
                 JOptionPane.showMessageDialog(this, "ORDER SAVED FOR: " + String.valueOf(df.format(dateOrder.getDate())));
                 cmbSupplier.setEnabled(true);   
@@ -942,14 +943,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 //add category of products and save in the report
 //        try{
 //            for(int i=0; i<tableOrder.getRowCount();i++){
-//                pstmt = conn.prepareStatement("INSERT INTO tblOrder (productName,qtyOrder,orderDate,category,transactionNumber) values(?,?,?,?,?)");
-//                pstmt.setString(1,tableOrder.getValueAt(i, 0).toString());
-//                pstmt.setInt(2,Integer.valueOf(tableOrder.getValueAt(i, 2).toString()));
-//                pstmt.setString(3, String.valueOf(df.format(dateOrder.getDate())));
-//                pstmt.setString(4,tableOrder.getValueAt(i, 3).toString());
-//                pstmt.setInt(5,Integer.valueOf(lblTranNumber.getText()));
-//                pstmt.execute();
-//                pstmt.close();
+//                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblOrder (productName,qtyOrder,orderDate,category,transactionNumber) values(?,?,?,?,?)");
+//                dbConn.pstmt.setString(1,tableOrder.getValueAt(i, 0).toString());
+//                dbConn.pstmt.setInt(2,Integer.valueOf(tableOrder.getValueAt(i, 2).toString()));
+//                dbConn.pstmt.setString(3, String.valueOf(df.format(dateOrder.getDate())));
+//                dbConn.pstmt.setString(4,tableOrder.getValueAt(i, 3).toString());
+//                dbConn.pstmt.setInt(5,Integer.valueOf(lblTranNumber.getText()));
+//                dbConn.pstmt.execute();
+//                dbConn.pstmt.close();
 //            }
 //            JOptionPane.showMessageDialog(this, "ORDER SAVED FOR: " + String.valueOf(df.format(dateOrder.getDate())));
 //            DefaultTableModel model = (DefaultTableModel)tableOrder.getModel();
@@ -963,11 +964,11 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void btnShowOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowOrderActionPerformed
         Date getDate = datePicker.getDate();
         try{
-            pstmt = conn.prepareStatement("SELECT po_Id,po_supplier,po_TotalAmount from tblPurchaseOrder where po_lpoDate=?");
-            pstmt.setString(1,String.valueOf(df.format(getDate)));
-            rs = pstmt.executeQuery();
-            tblLPO.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT po_Id,po_supplier,po_TotalAmount from tblPurchaseOrder where po_lpoDate=?");
+            dbConn.pstmt.setString(1,String.valueOf(df.format(getDate)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblLPO.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             tblLPO.getColumnModel().getColumn(0).setHeaderValue("LPO");
             tblLPO.getColumnModel().getColumn(1).setHeaderValue("SUPPLIER");
             tblLPO.getColumnModel().getColumn(2).setHeaderValue("AMOUNT");
@@ -977,19 +978,19 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         
 //        try{
 //            String getOrderSQL = "Select * from tblOrder where orderDate=? or transactionNumber=? order by category";
-//            pstmt = conn.prepareStatement(getOrderSQL);
+//            dbConn.pstmt = dbConn.conn.prepareStatement(getOrderSQL);
 //            if (getDate == null){
-//                pstmt.setString(1,"");
-//                pstmt.setString(2,txtTransactionNumber.getText());
-//                rs = pstmt.executeQuery();
-//                tableReceive.setModel(DbUtils.resultSetToTableModel(rs));
+//                dbConn.pstmt.setString(1,"");
+//                dbConn.pstmt.setString(2,txtTransactionNumber.getText());
+//                dbConn.rs = dbConn.pstmt.executeQuery();
+//                tableReceive.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
 //            }else{
-//                pstmt.setString(1,String.valueOf(df.format(getDate)));
-//                pstmt.setString(2,txtTransactionNumber.getText());
-//                rs = pstmt.executeQuery();
-//                tableReceive.setModel(DbUtils.resultSetToTableModel(rs));
+//                dbConn.pstmt.setString(1,String.valueOf(df.format(getDate)));
+//                dbConn.pstmt.setString(2,txtTransactionNumber.getText());
+//                dbConn.rs = dbConn.pstmt.executeQuery();
+//                tableReceive.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
 //            }
-//            pstmt.close();
+//            dbConn.pstmt.close();
 //            sortTableReceive();
 //        }catch(SQLException e){
 //            JOptionPane.showMessageDialog(this, e.getMessage());
@@ -999,10 +1000,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 private void saveInSales(){
 //    try{
 //        String saveSalesSQL = "INSERT INTO tblSales (productName,unitPrice,lastSoh,) values (?,?,?)";
-//        pstmt  = conn.prepareStatement(saveSalesSQL);
+//        dbConn.pstmt  = dbConn.conn.prepareStatement(saveSalesSQL);
 //        for (int i=0; i<tableReceive.getRowCount(); i++){
-//            pstmt.setString(1,tableReceive.getValueAt(i, 0).toString());
-//            pstmt.setString(2,)
+//            dbConn.pstmt.setString(1,tableReceive.getValueAt(i, 0).toString());
+//            dbConn.pstmt.setString(2,)
 //
 //        }    
 //    }catch(SQLException e){
@@ -1016,17 +1017,17 @@ private void saveInSales(){
                 String receiveLPO = "UPDATE tblPurchaseOrder set po_qtyReceived=?,po_receiveDate=?,po_status=?,po_payableAmount=? "
                         + "where po_Id=? and po_prodName=?";
                 for(int i=0;i<tableReceive.getRowCount();i++){
-                    pstmt = conn.prepareStatement(receiveLPO);
-                    pstmt.setInt(1,Integer.valueOf(model.getValueAt(i, 5).toString()));
-                    pstmt.setString(2,String.valueOf(df.format(dateToday)));
-                    pstmt.setString(3,"RECEIVED");
+                    dbConn.pstmt = dbConn.conn.prepareStatement(receiveLPO);
+                    dbConn.pstmt.setInt(1,Integer.valueOf(model.getValueAt(i, 5).toString()));
+                    dbConn.pstmt.setString(2,String.valueOf(df.format(dateToday)));
+                    dbConn.pstmt.setString(3,"RECEIVED");
                     double getPayable = Double.valueOf(dfo.format(Double.valueOf(model.getValueAt(i, 3).toString()) 
                                         * Double.valueOf(model.getValueAt(i, 5).toString()))); 
-                    pstmt.setDouble(4,getPayable);
-                    pstmt.setInt(5, Integer.valueOf(model.getValueAt(i, 0).toString()));
-                    pstmt.setString(6, tableReceive.getValueAt(i, 1).toString());
-                    pstmt.executeUpdate();
-                    pstmt.close();
+                    dbConn.pstmt.setDouble(4,getPayable);
+                    dbConn.pstmt.setInt(5, Integer.valueOf(model.getValueAt(i, 0).toString()));
+                    dbConn.pstmt.setString(6, tableReceive.getValueAt(i, 1).toString());
+                    dbConn.pstmt.executeUpdate();
+                    dbConn.pstmt.close();
                 }
                      JOptionPane.showMessageDialog(this, "ITEMS RECEIVED");
                      saveAuditTrail("LPO ITEMS RECEIVED FOR: " + model.getValueAt(0, 0).toString()); 
@@ -1036,11 +1037,11 @@ private void saveInSales(){
          try{
             String addToStockSQL = "UPDATE tblProduct set stockOnHand= stockOnHand+? where productName=?";
             for(int i=0;i<tableReceive.getRowCount();i++){
-                pstmt = conn.prepareStatement(addToStockSQL);
-                pstmt.setInt(1,Integer.valueOf(tableReceive.getValueAt(i, 5).toString()));
-                pstmt.setString(2, tableReceive.getValueAt(i, 1).toString());
-                pstmt.executeUpdate();
-                pstmt.close();
+                dbConn.pstmt = dbConn.conn.prepareStatement(addToStockSQL);
+                dbConn.pstmt.setInt(1,Integer.valueOf(tableReceive.getValueAt(i, 5).toString()));
+                dbConn.pstmt.setString(2, tableReceive.getValueAt(i, 1).toString());
+                dbConn.pstmt.executeUpdate();
+                dbConn.pstmt.close();
             }
         }catch (SQLException e){
             e.getMessage();
@@ -1052,13 +1053,13 @@ private void saveInSales(){
 //        try{
 //            String receiveAllSQL = "UPDATE tblOrder set orderReceived=?,receivedDate=? where transactionNumber=? and productName=?";
 //            for(int i=0;i<tableReceive.getRowCount();i++){
-//                pstmt = conn.prepareStatement(receiveAllSQL);
-//                pstmt.setInt(1,Integer.valueOf(tableReceive.getValueAt(i, 3).toString()));
-//                pstmt.setString(2,String.valueOf(df.format(dateToday)));
-//                pstmt.setString(3, txtTransactionNumber.getText());
-//                pstmt.setString(4, tableReceive.getValueAt(i, 0).toString());
-//                pstmt.executeUpdate();
-//                pstmt.close();
+//                dbConn.pstmt = dbConn.conn.prepareStatement(receiveAllSQL);
+//                dbConn.pstmt.setInt(1,Integer.valueOf(tableReceive.getValueAt(i, 3).toString()));
+//                dbConn.pstmt.setString(2,String.valueOf(df.format(dateToday)));
+//                dbConn.pstmt.setString(3, txtTransactionNumber.getText());
+//                dbConn.pstmt.setString(4, tableReceive.getValueAt(i, 0).toString());
+//                dbConn.pstmt.executeUpdate();
+//                dbConn.pstmt.close();
 //            }
 //                 JOptionPane.showMessageDialog(this, "ORDER PROCESSED");
 //        }catch(SQLException e){
@@ -1068,11 +1069,11 @@ private void saveInSales(){
 //        try{
 //            String addToStockSQL = "UPDATE tblProduct set stockOnHand= stockOnHand+? where productName=?";
 //            for(int i=0;i<tableReceive.getRowCount();i++){
-//                pstmt = conn.prepareStatement(addToStockSQL);
-//                pstmt.setInt(1,Integer.valueOf(tableReceive.getValueAt(i, 3).toString()));
-//                pstmt.setString(2, tableReceive.getValueAt(i, 0).toString());
-//                pstmt.executeUpdate();
-//                pstmt.close();
+//                dbConn.pstmt = dbConn.conn.prepareStatement(addToStockSQL);
+//                dbConn.pstmt.setInt(1,Integer.valueOf(tableReceive.getValueAt(i, 3).toString()));
+//                dbConn.pstmt.setString(2, tableReceive.getValueAt(i, 0).toString());
+//                dbConn.pstmt.executeUpdate();
+//                dbConn.pstmt.close();
 //            }
 //        }catch (SQLException e){
 //            e.getMessage();
@@ -1085,15 +1086,15 @@ private void saveInSales(){
 //        String tblClick = tableReceive.getModel().getValueAt(ba, 0).toString();
 //        String getSelectedItem = "Select * from tblOrder where productName=?";
 //        try{
-//            pstmt = conn.prepareStatement(getSelectedItem);
-//            pstmt.setString(1,tblClick);
-//            rs = pstmt.executeQuery();
-//            if (rs.next()){
+//            dbConn.pstmt = dbConn.conn.prepareStatement(getSelectedItem);
+//            dbConn.pstmt.setString(1,tblClick);
+//            dbConn.rs = dbConn.pstmt.executeQuery();
+//            if (dbConn.rs.next()){
 //            lblReceiveOrder.setText(tblClick);
 //            lblReceiveCategory.setText(tableReceive.getValueAt(ba, 2).toString());
 //            lblReceiveQtyOrder.setText(tableReceive.getValueAt(ba, 1).toString());
 //            }
-//            pstmt.close();
+//            dbConn.pstmt.close();
 //            btnClearOrderActionPerformed(null);
 //        }catch(SQLException e){
 //            e.getMessage();
@@ -1102,12 +1103,12 @@ private void saveInSales(){
 
     private void btnShowItemsBySupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowItemsBySupplierActionPerformed
         try{
-            pstmt = conn.prepareStatement("SELECT productId,productName,"
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,"
                     + "stockOnHand,supplier,supplierPrice from tblProduct where supplier = ?");
-            pstmt.setString(1,cmbSupplier.getSelectedItem().toString());
-            rs = pstmt.executeQuery();
-            tableMinimum.setModel(DbUtils.resultSetToTableModel(rs));
-             pstmt.close();
+            dbConn.pstmt.setString(1,cmbSupplier.getSelectedItem().toString());
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tableMinimum.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+             dbConn.pstmt.close();
              DefaultTableModel model = (DefaultTableModel)tableMinimum.getModel();
              model.addColumn("QTY ORDER");
             fillTable();
@@ -1121,12 +1122,12 @@ private void saveInSales(){
         int ba = tblLPO.convertRowIndexToModel(row);
         String tblClick = tblLPO.getModel().getValueAt(ba, 0).toString();
         try{
-            pstmt = conn.prepareStatement("Select po_Id,po_prodName,po_qtyOrder,"
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select po_Id,po_prodName,po_qtyOrder,"
                     + "format(po_supPrice,3),format(po_totalPrice,3),po_qtyReceived from tblPurchaseOrder where po_Id=?");
-            pstmt.setString(1, tblClick);
-            rs = pstmt.executeQuery();
-                tableReceive.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt.setString(1, tblClick);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+                tableReceive.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             sortTableReceived();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1147,12 +1148,12 @@ private void saveInSales(){
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Date getDate = datePayLPO.getDate();
         try{
-            pstmt = conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount, po_lpoDate from "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount, po_lpoDate from "
                     + "tblPurchaseOrder where po_lpoDate=?");
-            pstmt.setString(1,String.valueOf(df.format(getDate)));
-            rs = pstmt.executeQuery();
-            tblLPOPayment.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt.setString(1,String.valueOf(df.format(getDate)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblLPOPayment.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             tblLPOPayment.getColumnModel().getColumn(0).setHeaderValue("LPO");
             tblLPOPayment.getColumnModel().getColumn(1).setHeaderValue("SUPPLIER");
             tblLPOPayment.getColumnModel().getColumn(2).setHeaderValue("RECEIVED");
@@ -1169,32 +1170,32 @@ private void saveInSales(){
         String tblClick = tblLPOPayment.getModel().getValueAt(ba, 0).toString();
         String fetchData = "SELECT * from tblPurchaseOrder where po_Id=?";
         try{
-            pstmt  = conn.prepareStatement(fetchData);
-            pstmt.setInt(1, Integer.valueOf(tblClick));
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblLPONumber.setText(String.valueOf(rs.getInt("po_Id")));
-                lblSupplier.setText(rs.getString("po_supplier"));
-                getPOStatus = rs.getString("po_status");
-                datePayLPO.setDate(df.parse(rs.getString("po_lpoDate")));
+            dbConn.pstmt  = dbConn.conn.prepareStatement(fetchData);
+            dbConn.pstmt.setInt(1, Integer.valueOf(tblClick));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblLPONumber.setText(String.valueOf(dbConn.rs.getInt("po_Id")));
+                lblSupplier.setText(dbConn.rs.getString("po_supplier"));
+                getPOStatus = dbConn.rs.getString("po_status");
+                datePayLPO.setDate(df.parse(dbConn.rs.getString("po_lpoDate")));
                 txtAmountPaid.requestFocus();
             }
-            pstmt.close();
-            rs.close();
-        }catch(SQLException |ParseException e){
+            dbConn.pstmt.close();
+            dbConn.rs.close();
+        }catch(SQLException | ParseException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
             String fetchDataSum = "SELECT sum(po_payableAmount) from tblPurchaseOrder where po_Id=?";
-            pstmt = conn.prepareStatement(fetchDataSum);
-            pstmt.setInt(1, Integer.valueOf(tblClick));
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblTotalAmountLPOPayment.setText(rs.getString(1));
-                double getTotalAmountPayment = Double.parseDouble(lblTotalAmountLPOPayment.getText());
+            dbConn.pstmt = dbConn.conn.prepareStatement(fetchDataSum);
+            dbConn.pstmt.setInt(1, Integer.valueOf(tblClick));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblTotalAmountLPOPayment.setText(dbConn.rs.getString(1));
+                double getTotalAmountPayment = Double.valueOf(lblTotalAmountLPOPayment.getText());
                 lblTotalAmountLPOPayment.setText(dfo.format(getTotalAmountPayment));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException ex){
             ex.getMessage();
         }
@@ -1205,13 +1206,13 @@ private void saveInSales(){
             JOptionPane.showMessageDialog(this, "LPO IS PAID ALREADY","LPO PAID",JOptionPane.WARNING_MESSAGE);
         }else{
             try{
-                pstmt = conn.prepareStatement("update tblPurchaseOrder set po_status=?, po_paidAmount=? where po_lpoDate=? and po_Id=?");
-                pstmt.setString(1,"PAID");
-                pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
-                pstmt.setString(3,String.valueOf(df.format(datePayLPO.getDate())));
-                pstmt.setInt(4,Integer.valueOf(lblLPONumber.getText()));
-                pstmt.executeUpdate();
-                pstmt.close();
+                dbConn.pstmt = dbConn.conn.prepareStatement("update tblPurchaseOrder set po_status=?, po_paidAmount=? where po_lpoDate=? and po_Id=?");
+                dbConn.pstmt.setString(1,"PAID");
+                dbConn.pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
+                dbConn.pstmt.setString(3,String.valueOf(df.format(datePayLPO.getDate())));
+                dbConn.pstmt.setInt(4,Integer.valueOf(lblLPONumber.getText()));
+                dbConn.pstmt.executeUpdate();
+                dbConn.pstmt.close();
                 JOptionPane.showMessageDialog(this, "LPO PAYMENT PROCESSED");            
                 saveAuditTrail("PROCESSED LPO PAYMENT FOR #: " + lblLPONumber.getText());
             }catch(SQLException e){
@@ -1220,15 +1221,15 @@ private void saveInSales(){
             //add to expense
             try{
                 getNextExpense();
-                pstmt = conn.prepareStatement("INSERT INTO tblExpense(ex_id,ex_amount,ex_comment,ex_date)"
+                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblExpense(ex_id,ex_amount,ex_comment,ex_date)"
                         + "values(?,?,?,?)");
-                pstmt.setInt(1, getMaxExpenseID);
-                pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
-                pstmt.setString(3,"FOR LPO #: " + lblLPONumber.getText());
+                dbConn.pstmt.setInt(1, getMaxExpenseID);
+                dbConn.pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
+                dbConn.pstmt.setString(3,"FOR LPO #: " + lblLPONumber.getText());
                 Date dateToday = new Date();
-                pstmt.setString(4,String.valueOf(df.format(dateToday)));
-                pstmt.execute();
-                pstmt.close();          
+                dbConn.pstmt.setString(4,String.valueOf(df.format(dateToday)));
+                dbConn.pstmt.execute();
+                dbConn.pstmt.close();          
                 saveAuditTrail("LPO PAID FOR #: " + lblLPONumber.getText());
                 lblLPONumber.setText("");
                 lblTotalAmountLPOPayment.setText("");
@@ -1242,10 +1243,10 @@ private void saveInSales(){
     }//GEN-LAST:event_btnProcessLPOPaymentActionPerformed
     private void getNextExpense(){
         try{
-            pstmt  = conn.prepareStatement("SELECT ex_id from tblExpense order by ex_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if(rs.next()){
-                getMaxExpenseID = rs.getInt(1);
+            dbConn.pstmt  = dbConn.conn.prepareStatement("SELECT ex_id from tblExpense order by ex_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if(dbConn.rs.next()){
+                getMaxExpenseID = dbConn.rs.getInt(1);
                 getMaxExpenseID++;
             }else{
                 getMaxExpenseID=1;
@@ -1276,16 +1277,16 @@ private void saveInSales(){
         DefaultTableModel model = (DefaultTableModel)tableMinimum.getModel(); 
         try{
             String viewCriticalSQL = "Select * from tblProduct where category=?";
-            pstmt = conn.prepareStatement(viewCriticalSQL);
-            pstmt.setString(1,getCategory);
-            rs = pstmt.executeQuery();
+            dbConn.pstmt = dbConn.conn.prepareStatement(viewCriticalSQL);
+            dbConn.pstmt.setString(1,getCategory);
+            dbConn.rs = dbConn.pstmt.executeQuery();
             while(model.getRowCount()>0){
                 model.setRowCount(0);
             }
-            while(rs.next()){
-                String prodName = rs.getString("productName");
-                int getStock = rs.getInt("stockOnHand");
-                int getMinimum = rs.getInt("minimumOrder");
+            while(dbConn.rs.next()){
+                String prodName = dbConn.rs.getString("productName");
+                int getStock = dbConn.rs.getInt("stockOnHand");
+                int getMinimum = dbConn.rs.getInt("minimumOrder");
                  if (getStock<getMinimum){
                     Object[] adRow = {"",prodName,"","",getStock,getMinimum,""};
                     model.addRow(adRow);
@@ -1303,11 +1304,11 @@ private void saveInSales(){
         tableReceive.getColumnModel().getColumn(3).setHeaderValue("QTY RECEIVED");
         
         try{
-            pstmt = conn.prepareStatement("SELECT * FROM tblProduct order by category");
-            rs = pstmt.executeQuery();
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * FROM tblProduct order by category");
+            dbConn.rs = dbConn.pstmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel)tableReceive.getModel();
-            while (rs.next()){
-                String getProd = rs.getString("productName");
+            while (dbConn.rs.next()){
+                String getProd = dbConn.rs.getString("productName");
                 int duplicateRow =-1;
                 for (int j=0; j<model.getRowCount();j++){
                     Object obj2 = model.getValueAt(j, 0);
@@ -1317,7 +1318,7 @@ private void saveInSales(){
                     }
                 }
                 if (duplicateRow == -1){
-                    Object[] obj = {getProd,"0",rs.getString("category")};
+                    Object[] obj = {getProd,"0",dbConn.rs.getString("category")};
                  model.addRow(obj);
                 }
             }
@@ -1329,12 +1330,12 @@ private void saveInSales(){
         Map param = new HashMap();
         param.put("lpoNumber", lblTranNumber.getText());
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repLPO.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
 
         }catch(ClassNotFoundException | SQLException | JRException e){
@@ -1345,7 +1346,7 @@ private void saveInSales(){
 //        Map param = new HashMap();
 //        param.put("date", String.valueOf(df.format(dateOrder.getDate())));
 //        try{
-//            conn.close();
+//            dbConn.conn.close();
 //            Class.forName("com.mysql.jdbc.Driver");
 //            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
 //            JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repOrder.jrxml"));

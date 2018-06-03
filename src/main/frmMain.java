@@ -100,6 +100,8 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        btnSupplier.setBackground(new java.awt.Color(255, 255, 255));
+        btnSupplier.setForeground(new java.awt.Color(0, 0, 0));
         btnSupplier.setText("SUPPLIER MASTER");
         btnSupplier.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -108,6 +110,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel2.add(btnSupplier, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 240, 100));
 
+        btnProduct.setBackground(new java.awt.Color(255, 255, 255));
+        btnProduct.setForeground(new java.awt.Color(0, 0, 0));
+        btnProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/productIcon.png"))); // NOI18N
         btnProduct.setText("PRODUCT");
         btnProduct.setFocusable(false);
         btnProduct.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
@@ -118,6 +123,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel2.add(btnProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 240, 100));
 
+        btnStockAdjust.setBackground(new java.awt.Color(255, 255, 255));
+        btnStockAdjust.setForeground(new java.awt.Color(0, 0, 0));
+        btnStockAdjust.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/stockAdjustIcon.png"))); // NOI18N
         btnStockAdjust.setText("STOCK ADJUST");
         btnStockAdjust.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -126,6 +134,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel2.add(btnStockAdjust, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 240, 100));
 
+        btnLPO.setBackground(new java.awt.Color(255, 255, 255));
+        btnLPO.setForeground(new java.awt.Color(0, 0, 0));
+        btnLPO.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/LPOicon.png"))); // NOI18N
         btnLPO.setText("LPO/RECEIVING");
         btnLPO.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -134,6 +145,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel2.add(btnLPO, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 240, 100));
 
+        btnCashiering.setBackground(new java.awt.Color(255, 255, 255));
+        btnCashiering.setForeground(new java.awt.Color(0, 0, 0));
+        btnCashiering.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/cashierIcon.png"))); // NOI18N
         btnCashiering.setText("SALES/CASHIER");
         btnCashiering.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -142,6 +156,8 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel2.add(btnCashiering, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 240, 100));
 
+        btnCashiering1.setBackground(new java.awt.Color(255, 255, 255));
+        btnCashiering1.setForeground(new java.awt.Color(0, 0, 0));
         btnCashiering1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCashiering1ActionPerformed(evt);
@@ -155,6 +171,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         jPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        btnExpenses.setBackground(new java.awt.Color(255, 255, 255));
+        btnExpenses.setForeground(new java.awt.Color(0, 0, 0));
+        btnExpenses.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/expenseiCon.png"))); // NOI18N
         btnExpenses.setText("EXPENSES");
         btnExpenses.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -163,6 +182,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel4.add(btnExpenses, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 240, 80));
 
+        btnReceipt.setBackground(new java.awt.Color(255, 255, 255));
+        btnReceipt.setForeground(new java.awt.Color(0, 0, 0));
+        btnReceipt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/ReportsIcon2.png"))); // NOI18N
         btnReceipt.setText("RECEIPT DATABASE");
         btnReceipt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -171,6 +193,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel4.add(btnReceipt, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 240, 80));
 
+        btnReports.setBackground(new java.awt.Color(255, 255, 255));
+        btnReports.setForeground(new java.awt.Color(0, 0, 0));
+        btnReports.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/ReportsIcon3.png"))); // NOI18N
         btnReports.setText("REPORTS");
         btnReports.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -179,6 +204,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel4.add(btnReports, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 240, 80));
 
+        btnUserControl.setBackground(new java.awt.Color(255, 255, 255));
+        btnUserControl.setForeground(new java.awt.Color(0, 0, 0));
+        btnUserControl.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/useriCon.png"))); // NOI18N
         btnUserControl.setText("USER CONTROL");
         btnUserControl.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -187,6 +215,9 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel4.add(btnUserControl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 240, 80));
 
+        btnLogOut.setBackground(new java.awt.Color(255, 255, 255));
+        btnLogOut.setForeground(new java.awt.Color(0, 0, 0));
+        btnLogOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/logoutIcon.png"))); // NOI18N
         btnLogOut.setText("LOG OUT");
         btnLogOut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -195,6 +226,8 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel4.add(btnLogOut, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 490, 240, 80));
 
+        btnLogOut1.setBackground(new java.awt.Color(255, 255, 255));
+        btnLogOut1.setForeground(new java.awt.Color(0, 0, 0));
         btnLogOut1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLogOut1ActionPerformed(evt);
@@ -202,6 +235,8 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel4.add(btnLogOut1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 580, 240, 80));
 
+        btnLogOut2.setBackground(new java.awt.Color(255, 255, 255));
+        btnLogOut2.setForeground(new java.awt.Color(0, 0, 0));
         btnLogOut2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLogOut2ActionPerformed(evt);

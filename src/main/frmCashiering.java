@@ -44,9 +44,10 @@ int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 int qty;
 String getPaymentMethod;
+dbConnection dbConn = new dbConnection();
     public frmCashiering() {
         initComponents();
-        doConnect();
+        dbConn.doConnect();
         sortTable();
         runningTime();
 //        btnCash.setText("<html><center>CASH <br> PAYMENT</html>");
@@ -74,16 +75,16 @@ String getPaymentMethod;
     }
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
             }
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
     private void saveAuditTrail(String getTransaction){
@@ -91,141 +92,263 @@ String getPaymentMethod;
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
     private void fillFavorites(){
-    try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "1");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav1.setText(rs.getString("productName"));
+        try{
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "1");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav1.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }
     try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "2");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav2.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "2");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav2.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "3");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav3.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "3");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav3.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "4");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav4.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "4");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav4.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "5");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav5.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "5");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav5.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "6");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav6.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "6");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav6.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "7");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav7.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "7");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav7.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "8");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav8.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "8");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav8.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "9");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav9.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "9");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav9.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "10");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav10.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "10");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav10.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "11");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav11.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "11");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav11.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
-        pstmt.setString(1, "12");
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            btnFav12.setText(rs.getString("productName"));
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt.setString(1, "12");
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            btnFav12.setText(dbConn.rs.getString("productName"));
         }
-        pstmt.close();
+        dbConn.pstmt.close();
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }
+//    try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "1");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav1.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }
+//    try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "2");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav2.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "3");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav3.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "4");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav4.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "5");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav5.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "6");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav6.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "7");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav7.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "8");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav8.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "9");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav9.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "10");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav10.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "11");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav11.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }try{
+//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt.setString(1, "12");
+//        rs = pstmt.executeQuery();
+//        if (rs.next()){
+//            btnFav12.setText(rs.getString("productName"));
+//        }
+//        pstmt.close();
+//    }catch(SQLException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }
     }
     private void sortTable(){
         DefaultTableModel model = (DefaultTableModel)tableInvoice.getModel();   
@@ -238,14 +361,14 @@ String getPaymentMethod;
     private void listenSearch(){
      try{
          String searchSQL = "Select * from tblProduct where productId like ? OR productName like?";
-         pstmt = conn.prepareStatement(searchSQL);
-         pstmt.setString(1, "%"+txtSearch.getText()+"%");
-         pstmt.setString(2, "%"+txtSearch.getText()+"%");
-         rs = pstmt.executeQuery();
-         if (rs.next()){
-             lblProductId.setText(rs.getString("productId"));
-             lblProductName.setText(rs.getString("productName"));
-             lblUnitPrice.setText(rs.getString("unitPrice"));
+         dbConn.pstmt = dbConn.conn.prepareStatement(searchSQL);
+         dbConn.pstmt.setString(1, "%"+txtSearch.getText()+"%");
+         dbConn.pstmt.setString(2, "%"+txtSearch.getText()+"%");
+         dbConn.rs = dbConn.pstmt.executeQuery();
+         if (dbConn.rs.next()){
+             lblProductId.setText(dbConn.rs.getString("productId"));
+             lblProductName.setText(dbConn.rs.getString("productName"));
+             lblUnitPrice.setText(dbConn.rs.getString("unitPrice"));
              txtQuantity.setText("1");
          }
      }catch(SQLException e){
@@ -257,11 +380,11 @@ String getPaymentMethod;
         public void run(){       
         for(;;){        
         Calendar cal = new GregorianCalendar();
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-            lblDate.setText(day+"/"+(month+1)+"/"+year);
-
+//        int month = cal.get(Calendar.MONTH);
+//        int year = cal.get(Calendar.YEAR);
+//        int day = cal.get(Calendar.DAY_OF_MONTH);
+//            lblDate.setText(day+"-"+(month+1)+"-"+year);
+        lblDate.setText(dbConn.sdfDateGlobal.format(dbConn.todayDateGlobal));
         int second = cal.get(Calendar.SECOND);
         int minute = cal.get(Calendar.MINUTE);
         int hour = cal.get(Calendar.HOUR_OF_DAY);
@@ -1168,21 +1291,21 @@ private void clearTexts(){
                 + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,amountPaid,amountChange,cashier,date,time,paymentMethod)"
                 + "values(?,?,?,?,?,?,?,?,?,?,?,?)";
         for(int i=0; i<tableInvoice.getRowCount();i++){
-        pstmt =conn.prepareStatement(saveReceiptSQL);
-        pstmt.setInt(1,getTransactionID);
-        pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
-        pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
-        pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
-        pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
-        pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
-        pstmt.setDouble(7, Double.valueOf(txtAmountPaid.getText()));
-        pstmt.setDouble(8,Double.valueOf(lblChange.getText()));
-        pstmt.setString(9,frmLogin.showUserName);
-        pstmt.setString(10,lblDate.getText());
-        pstmt.setString(11,lblTime.getText());
-        pstmt.setString(12,getPaymentMethod);
-        pstmt.execute();
-        pstmt.close();
+        dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
+        dbConn.pstmt.setInt(1,getTransactionID);
+        dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
+        dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
+        dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
+        dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
+        dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
+        dbConn.pstmt.setDouble(7, Double.valueOf(txtAmountPaid.getText()));
+        dbConn.pstmt.setDouble(8,Double.valueOf(lblChange.getText()));
+        dbConn.pstmt.setString(9,frmLogin.showUserName);
+        dbConn.pstmt.setString(10,lblDate.getText());
+        dbConn.pstmt.setString(11,lblTime.getText());
+        dbConn.pstmt.setString(12,getPaymentMethod);
+        dbConn.pstmt.execute();
+        dbConn.pstmt.close();
         }
         saveAuditTrail("CASH TRANSACTION: " + String.valueOf(getTransactionID));
     }catch(SQLException e){
@@ -1196,23 +1319,23 @@ private void clearTexts(){
                 + "cardReference)"
                 + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         for(int i=0; i<tableInvoice.getRowCount();i++){
-        pstmt =conn.prepareStatement(saveReceiptSQL);
-        pstmt.setInt(1,getTransactionID);
-        pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
-        pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
-        pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
-        pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
-        pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
-        pstmt.setDouble(7, Double.valueOf(lblTotalAmount.getText()));
-        pstmt.setDouble(8,0.0);
-        pstmt.setString(9,frmLogin.showUserName);
-        pstmt.setString(10,lblDate.getText());
-        pstmt.setString(11,lblTime.getText());
-        pstmt.setString(12,getPaymentMethod);
-        pstmt.setString(13, txtCardNumber.getText());
-        pstmt.setString(14, txtCardReference.getText());
-        pstmt.execute();
-        pstmt.close();
+        dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
+        dbConn.pstmt.setInt(1,getTransactionID);
+        dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
+        dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
+        dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
+        dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
+        dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
+        dbConn.pstmt.setDouble(7, Double.valueOf(lblTotalAmount.getText()));
+        dbConn.pstmt.setDouble(8,0.0);
+        dbConn.pstmt.setString(9,frmLogin.showUserName);
+        dbConn.pstmt.setString(10,lblDate.getText());
+        dbConn.pstmt.setString(11,lblTime.getText());
+        dbConn.pstmt.setString(12,getPaymentMethod);
+        dbConn.pstmt.setString(13, txtCardNumber.getText());
+        dbConn.pstmt.setString(14, txtCardReference.getText());
+        dbConn.pstmt.execute();
+        dbConn.pstmt.close();
         }
         saveAuditTrail("CARD TRANSACTION: " + String.valueOf(getTransactionID));
     }catch(SQLException e){
@@ -1225,22 +1348,22 @@ private void clearTexts(){
                 + "amountPaid,amountChange,cashier,date,time,paymentMethod,focComment)"
                 + "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
         for(int i=0; i<tableInvoice.getRowCount();i++){
-        pstmt =conn.prepareStatement(saveReceiptSQL);
-        pstmt.setInt(1,getTransactionID);
-        pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
-        pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
-        pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
-        pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
-        pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
-        pstmt.setDouble(7, 0.000);
-        pstmt.setDouble(8,0.0000);
-        pstmt.setString(9,frmLogin.showUserName);
-        pstmt.setString(10,lblDate.getText());
-        pstmt.setString(11,lblTime.getText());
-        pstmt.setString(12,getPaymentMethod);
-        pstmt.setString(13, txtComment.getText());
-        pstmt.execute();
-        pstmt.close();
+        dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
+        dbConn.pstmt.setInt(1,getTransactionID);
+        dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
+        dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
+        dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
+        dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
+        dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
+        dbConn.pstmt.setDouble(7, 0.000);
+        dbConn.pstmt.setDouble(8,0.0000);
+        dbConn.pstmt.setString(9,frmLogin.showUserName);
+        dbConn.pstmt.setString(10,lblDate.getText());
+        dbConn.pstmt.setString(11,lblTime.getText());
+        dbConn.pstmt.setString(12,getPaymentMethod);
+        dbConn.pstmt.setString(13, txtComment.getText());
+        dbConn.pstmt.execute();
+        dbConn.pstmt.close();
         }
         saveAuditTrail("FOC TRANSACTION: " + String.valueOf(getTransactionID));
     }catch(SQLException e){
@@ -1250,12 +1373,12 @@ private void clearTexts(){
     //UPDATE STOCK QTY
     try{
         String deductStockOnHand = "UPDATE tblProduct set stockOnhand=stockOnhand-? where productId=?";
-        pstmt = conn.prepareStatement(deductStockOnHand);
+        dbConn.pstmt = dbConn.conn.prepareStatement(deductStockOnHand);
         DefaultTableModel model = (DefaultTableModel)tableInvoice.getModel();
         for(int j=0; j<model.getRowCount();j++){
-            pstmt.setInt(1,Integer.valueOf(model.getValueAt(j, 3).toString()));
-            pstmt.setString(2,model.getValueAt(j, 0).toString());
-            pstmt.executeUpdate();
+            dbConn.pstmt.setInt(1,Integer.valueOf(model.getValueAt(j, 3).toString()));
+            dbConn.pstmt.setString(2,model.getValueAt(j, 0).toString());
+            dbConn.pstmt.executeUpdate();
         }
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1265,10 +1388,10 @@ private void clearTexts(){
 private void checkTransactionId(){
     try{
         String checkReceiptId = "SELECT * from tblReceipt order by transactionId DESC LIMIT 1";
-        pstmt =conn.prepareStatement(checkReceiptId);
-        rs = pstmt.executeQuery();
-        if (rs.next()){
-            getTransactionID = rs.getInt(1);
+        dbConn.pstmt =dbConn.conn.prepareStatement(checkReceiptId);
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            getTransactionID = dbConn.rs.getInt(1);
             getTransactionID++;
         }else{
             getTransactionID=1;
@@ -1303,7 +1426,7 @@ private void checkTransactionId(){
     Map param = new HashMap();
         param.put("tranId", getTransactionID);
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repReceipt.jrxml"));
@@ -1319,14 +1442,14 @@ private void checkTransactionId(){
         Map param = new HashMap();
         param.put("date", lblDate.getText());
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repAllReceipt.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
             JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
             JasperViewer.viewReport(jp,false);
-
+            dbConn.doConnect();
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -1352,14 +1475,14 @@ private void checkTransactionId(){
         Map param = new HashMap();
         param.put("tranId", getTransactionID);
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repReceipt.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
             JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
             JasperViewer.viewReport(jp,false);
-
+            dbConn.doConnect();
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }        
@@ -1371,44 +1494,44 @@ private void checkTransactionId(){
     }//GEN-LAST:event_bd50ActionPerformed
 private void displayDailySales(){
         try{
-            pstmt = conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
-            pstmt.setString(1, lblDate.getText());
-            pstmt.setString(2,"CASH");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblDailyCash.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt.setString(1, lblDate.getText());
+            dbConn.pstmt.setString(2,"CASH");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblDailyCash.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }else{
                 lblDailyCash.setText("0.000");
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
-            pstmt = conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
-            pstmt.setString(1, lblDate.getText());
-            pstmt.setString(2,"CARD");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblDailyCard.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt.setString(1, lblDate.getText());
+            dbConn.pstmt.setString(2,"CARD");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblDailyCard.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }else{
                 lblDailyCard.setText("0.000");
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
-            pstmt = conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
-            pstmt.setString(1, lblDate.getText());
-            pstmt.setString(2,"FOC");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblDailyFoc.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt.setString(1, lblDate.getText());
+            dbConn.pstmt.setString(2,"FOC");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblDailyFoc.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }else{
                 lblDailyFoc.setText("0.000");
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -1422,13 +1545,14 @@ private void displayDailySales(){
         param.put("focData", lblDailyFoc.getText());
         saveAuditTrail("VIEWED SALES REPORT FOR: " + lblDate.getText());
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repSalesSummary.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
             JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
             JasperViewer.viewReport(jp,false);
+            dbConn.doConnect();
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -1438,14 +1562,14 @@ private void displayDailySales(){
         Map param = new HashMap();
         param.put("date", lblDate.getText());
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repCurrentStock.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
             JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
             JasperViewer.viewReport(jp,false);
-
+            dbConn.doConnect();
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }

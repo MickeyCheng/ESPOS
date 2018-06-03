@@ -16,9 +16,10 @@ import static main.frmLogin.showUserName;
 import net.proteanit.sql.DbUtils;
 
 public class frmProduct extends javax.swing.JFrame {
-ResultSet rs;
-Connection conn;
-PreparedStatement pstmt;
+//ResultSet dbConn.rs;
+//Connection conn;
+//PreparedStatement dbConn.pstmt;
+dbConnection dbConn = new dbConnection();
 boolean add,edit;
 String getProductID;
 DecimalFormat df = new DecimalFormat("0.000");
@@ -27,7 +28,7 @@ int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     public frmProduct() {
         initComponents();
-        doConnect();
+        dbConn.doConnect();
         clearTexts();
         lockTexts();
         fillComboBox();
@@ -52,10 +53,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
@@ -69,25 +70,25 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
     }
     private void fillFaveList(){
         try{
-            pstmt = conn.prepareStatement("select productName,favorite from tblProduct where favorite<>? order by favorite");
-            pstmt.setString(1, "0");
-            rs = pstmt.executeQuery();
-            tblFaveList.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt = dbConn.conn.prepareStatement("select productName,favorite from tblProduct where favorite<>? order by favorite");
+            dbConn.pstmt.setString(1, "0");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblFaveList.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             tblFaveList.getColumnModel().getColumn(0).setHeaderValue("ITEM");
             tblFaveList.getColumnModel().getColumn(1).setHeaderValue("#");
         }catch(SQLException e){
@@ -98,12 +99,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         cmbProduct.removeAllItems();
         cmbFaveNumber.removeAllItems();
         try{
-            pstmt = conn.prepareStatement("Select * from tblproduct order by productName");
-            rs = pstmt.executeQuery();
-            while (rs.next()){
-                cmbProduct.addItem(rs.getString("productName"));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct order by productName");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            while (dbConn.rs.next()){
+                cmbProduct.addItem(dbConn.rs.getString("productName"));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -115,11 +116,11 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         cmbSupplier.removeAllItems();
         cmbSupplier2.removeAllItems();
         try{
-            pstmt = conn.prepareStatement("Select sm_name from tblSupplierMaster order by sm_name");
-            rs =pstmt.executeQuery();
-            while (rs.next()){
-                cmbSupplier.addItem(rs.getString("sm_name"));
-                cmbSupplier2.addItem(rs.getString("sm_name"));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sm_name from tblSupplierMaster order by sm_name");
+            dbConn.rs =dbConn.pstmt.executeQuery();
+            while (dbConn.rs.next()){
+                cmbSupplier.addItem(dbConn.rs.getString("sm_name"));
+                cmbSupplier2.addItem(dbConn.rs.getString("sm_name"));
             }
             cmbSupplier.setSelectedIndex(-1);
             cmbSupplier2.setSelectedIndex(-1);
@@ -131,12 +132,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String searchSQL = "Select productId,productName,unitPrice,supplier,stockOnHand "
                     + "from tblProduct where productName like? OR productId like? OR category like?";
-            pstmt = conn.prepareStatement(searchSQL);
-            pstmt.setString(1,"%"+txtSearch.getText()+"%");
-            pstmt.setString(2,"%"+txtSearch.getText()+"%");
-            pstmt.setString(3,"%"+txtSearch.getText()+"%");
-            rs = pstmt.executeQuery();
-            tableProduct.setModel(DbUtils.resultSetToTableModel(rs));
+            dbConn.pstmt = dbConn.conn.prepareStatement(searchSQL);
+            dbConn.pstmt.setString(1,"%"+txtSearch.getText()+"%");
+            dbConn.pstmt.setString(2,"%"+txtSearch.getText()+"%");
+            dbConn.pstmt.setString(3,"%"+txtSearch.getText()+"%");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tableProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             tableProduct.getColumnModel().getColumn(0).setHeaderValue("BARCODE");
             tableProduct.getColumnModel().getColumn(1).setHeaderValue("ITEM NAME");
             tableProduct.getColumnModel().getColumn(2).setHeaderValue("UNIT PRICE");
@@ -151,9 +152,9 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String fillTable = "Select productId,productName,unitPrice,supplier,"
                     + "stockOnHand from tblProduct order by category";
-            pstmt = conn.prepareStatement(fillTable);
-            rs = pstmt.executeQuery();
-            tableProduct.setModel(DbUtils.resultSetToTableModel(rs));
+            dbConn.pstmt = dbConn.conn.prepareStatement(fillTable);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tableProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             tableProduct.setAutoCreateRowSorter(true);
             tableProduct.getColumnModel().getColumn(0).setHeaderValue("BARCODE");
             tableProduct.getColumnModel().getColumn(1).setHeaderValue("ITEM NAME");
@@ -167,12 +168,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     protected void fillComboBox(){
         cmbCategory.removeAllItems();
         try{
-            pstmt = conn.prepareStatement("Select pc_name from tblProductCategory order by pc_id");
-            rs = pstmt.executeQuery();
-            while (rs.next()){
-                cmbCategory.addItem(rs.getString("pc_name"));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select pc_name from tblProductCategory order by pc_id");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            while (dbConn.rs.next()){
+                cmbCategory.addItem(dbConn.rs.getString("pc_name"));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -200,14 +201,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         txtProductName.setText("");
         txtSupplierPrice.setText("");
     }    
-    private void doConnect(){
-    try{
-        Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
-    }catch(SQLException | ClassNotFoundException e){
-        JOptionPane.showMessageDialog(this, e.getMessage());
-    }
-    }
+//    private void doConnect(){
+//    try{
+//        Class.forName("com.mysql.jdbc.Driver");
+//        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+//    }catch(SQLException | ClassNotFoundException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -220,7 +221,6 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 
         jPanel4 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jIntFrmFave = new javax.swing.JInternalFrame();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblFaveList = new javax.swing.JTable();
@@ -230,6 +230,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         cmbFaveNumber = new javax.swing.JComboBox<>();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtPrice = new javax.swing.JTextField();
@@ -274,11 +275,6 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 
         jPanel2.setBackground(new java.awt.Color(214, 214, 194));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("CATEGORY:");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 130, 20));
 
         jIntFrmFave.setBackground(new java.awt.Color(214, 214, 194));
         jIntFrmFave.setVisible(true);
@@ -338,7 +334,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         });
         jIntFrmFave.getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 120, 50));
 
-        jPanel2.add(jIntFrmFave, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 540, 250));
+        jPanel2.add(jIntFrmFave, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 540, 250));
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText("CATEGORY:");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 130, 20));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
@@ -419,7 +420,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         jPanel2.add(txtSupplierPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 170, 100, 30));
         jPanel2.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 250, 600, 20));
 
-        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 600, 320));
+        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 600, 320));
         jPanel4.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 600, 30));
 
         tableProduct.setModel(new javax.swing.table.DefaultTableModel(
@@ -456,7 +457,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnAddActionPerformed(evt);
             }
         });
-        jPanel4.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 330, 90, 70));
+        jPanel4.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 90, 70));
 
         btnEdit.setBackground(new java.awt.Color(255, 255, 255));
         btnEdit.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -470,7 +471,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnEditActionPerformed(evt);
             }
         });
-        jPanel4.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 330, 90, 70));
+        jPanel4.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 10, 90, 70));
 
         btnSave.setBackground(new java.awt.Color(255, 255, 255));
         btnSave.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -484,7 +485,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnSaveActionPerformed(evt);
             }
         });
-        jPanel4.add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 330, 90, 70));
+        jPanel4.add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 10, 90, 70));
 
         btnCancel.setBackground(new java.awt.Color(255, 255, 255));
         btnCancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -498,7 +499,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnCancelActionPerformed(evt);
             }
         });
-        jPanel4.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 330, 90, 70));
+        jPanel4.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 10, 90, 70));
 
         btnDelete.setBackground(new java.awt.Color(255, 255, 255));
         btnDelete.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -512,7 +513,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnDeleteActionPerformed(evt);
             }
         });
-        jPanel4.add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 330, 90, 70));
+        jPanel4.add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 10, 90, 70));
 
         btnDelete1.setBackground(new java.awt.Color(255, 255, 255));
         btnDelete1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -526,13 +527,13 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnDelete1ActionPerformed(evt);
             }
         });
-        jPanel4.add(btnDelete1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 330, 90, 70));
+        jPanel4.add(btnDelete1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 10, 90, 70));
 
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Search:");
         jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 90, -1));
 
-        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 620, 650));
+        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 630, 650));
 
         jMenu1.setText("File");
 
@@ -600,7 +601,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         String checkUnitPrice,checkSupplierPrice;
         try{
             checkUnitPrice = txtPrice.getText();
-            doCheckPrice = Double.parseDouble(checkUnitPrice);
+            doCheckPrice = Double.valueOf(checkUnitPrice);
             txtPrice.setText(df.format(doCheckPrice));
         }catch(NumberFormatException e){
             JOptionPane.showMessageDialog(this, "CHECK UNIT PRICE","UNIT PRICE",JOptionPane.ERROR_MESSAGE);
@@ -608,7 +609,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         
         try{
             checkSupplierPrice = txtSupplierPrice.getText();
-            doCheckSupPrice = Double.parseDouble(checkSupplierPrice);
+            doCheckSupPrice = Double.valueOf(checkSupplierPrice);
             txtSupplierPrice.setText(df.format(doCheckSupPrice));
         }catch(NumberFormatException e){
             JOptionPane.showMessageDialog(this, "CHECK SUPPLIER PRICE","SUPPLIER",JOptionPane.ERROR_MESSAGE);
@@ -621,23 +622,23 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 String insertTblProduct = "INSERT INTO tblProduct (productId,productName,unitPrice,category,"
                         + "stockOnHand,supplier,supplier2,supplierPrice) "
                         + "values (?,?,?,?,?,?,?,?)";
-                pstmt = conn.prepareStatement(insertTblProduct);
-                pstmt.setString(1,txtProductId.getText());
-                pstmt.setString(2,txtProductName.getText());
-                pstmt.setString(3, txtPrice.getText());
-                pstmt.setString(4,cmbCategory.getSelectedItem().toString());
-                pstmt.setInt(5,Integer.valueOf(txtStock.getText()));
+                dbConn.pstmt = dbConn.conn.prepareStatement(insertTblProduct);
+                dbConn.pstmt.setString(1,txtProductId.getText());
+                dbConn.pstmt.setString(2,txtProductName.getText());
+                dbConn.pstmt.setString(3, txtPrice.getText());
+                dbConn.pstmt.setString(4,cmbCategory.getSelectedItem().toString());
+                dbConn.pstmt.setInt(5,Integer.valueOf(txtStock.getText()));
                
-                pstmt.setString(6, cmbSupplier.getSelectedItem().toString());
+                dbConn.pstmt.setString(6, cmbSupplier.getSelectedItem().toString());
                 if (cmbSupplier2.getSelectedIndex() == -1){
-                    pstmt.setString(7,"");
+                    dbConn.pstmt.setString(7,"");
                 }else{
-                    pstmt.setString(7, cmbSupplier2.getSelectedItem().toString());
+                    dbConn.pstmt.setString(7, cmbSupplier2.getSelectedItem().toString());
                 }
-                pstmt.setString(8, txtSupplierPrice.getText());
-                pstmt.execute();
+                dbConn.pstmt.setString(8, txtSupplierPrice.getText());
+                dbConn.pstmt.execute();
                 JOptionPane.showMessageDialog(this, "PRODUCT ADDED");
-                pstmt.close();
+                dbConn.pstmt.close();
                 saveAuditTrail("ADDED PRODUCT: " + txtProductName.getText());
                 fillTable();
                 clearTexts();
@@ -652,23 +653,23 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 String updateTblProduct = "UPDATE tblProduct set productId=?,productName=?,unitPrice=?,category=?,stockOnHand=?"
                         + ",supplier=?, supplier2=?, supplierPrice=?"
                         + " where productId=?";
-                pstmt = conn.prepareStatement(updateTblProduct);
-                pstmt.setString(1,txtProductId.getText());
-                pstmt.setString(2,txtProductName.getText());
-                pstmt.setString(3, txtPrice.getText());
-                pstmt.setString(4,cmbCategory.getSelectedItem().toString());
-                pstmt.setInt(5,Integer.valueOf(txtStock.getText())); 
-                pstmt.setString(6, cmbSupplier.getSelectedItem().toString());
+                dbConn.pstmt = dbConn.conn.prepareStatement(updateTblProduct);
+                dbConn.pstmt.setString(1,txtProductId.getText());
+                dbConn.pstmt.setString(2,txtProductName.getText());
+                dbConn.pstmt.setString(3, txtPrice.getText());
+                dbConn.pstmt.setString(4,cmbCategory.getSelectedItem().toString());
+                dbConn.pstmt.setInt(5,Integer.valueOf(txtStock.getText())); 
+                dbConn.pstmt.setString(6, cmbSupplier.getSelectedItem().toString());
                 if (cmbSupplier2.getSelectedIndex() == -1){
-                    pstmt.setString(7, "");
+                    dbConn.pstmt.setString(7, "");
                 }else{
-                    pstmt.setString(7, cmbSupplier2.getSelectedItem().toString());
+                    dbConn.pstmt.setString(7, cmbSupplier2.getSelectedItem().toString());
                 }
-                pstmt.setString(8, txtSupplierPrice.getText());              
-                pstmt.setString(9, getProductID);
-                pstmt.executeUpdate();
+                dbConn.pstmt.setString(8, txtSupplierPrice.getText());              
+                dbConn.pstmt.setString(9, getProductID);
+                dbConn.pstmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "PRODUCT DETAILS EDITED");
-                pstmt.close();
+                dbConn.pstmt.close();
                 saveAuditTrail("EDITED PRODUCT: " + txtProductName.getText());
                 fillTable();
                 clearTexts();
@@ -688,19 +689,19 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String tblClick = (tableProduct.getModel().getValueAt(ba, 0).toString());
             String tableQuery = "Select * from tblProduct where productId=?";
-            pstmt = conn.prepareStatement(tableQuery);
-            pstmt.setString(1, tblClick);
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                txtProductName.setText(rs.getString("productName"));
-                txtProductId.setText(rs.getString("productId"));
-                txtPrice.setText(rs.getString("unitPrice"));
-                txtStock.setText(String.valueOf(rs.getInt("stockOnHand")));
-                cmbCategory.setSelectedItem(rs.getString("category"));
-                cmbSupplier.setSelectedItem(rs.getString("supplier"));                
-                cmbSupplier2.setSelectedItem(rs.getString("supplier2"));
-                getProductID= rs.getString("productId");
-                txtSupplierPrice.setText(rs.getString("supplierPrice"));
+            dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
+            dbConn.pstmt.setString(1, tblClick);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                txtProductName.setText(dbConn.rs.getString("productName"));
+                txtProductId.setText(dbConn.rs.getString("productId"));
+                txtPrice.setText(dbConn.rs.getString("unitPrice"));
+                txtStock.setText(String.valueOf(dbConn.rs.getInt("stockOnHand")));
+                cmbCategory.setSelectedItem(dbConn.rs.getString("category"));
+                cmbSupplier.setSelectedItem(dbConn.rs.getString("supplier"));                
+                cmbSupplier2.setSelectedItem(dbConn.rs.getString("supplier2"));
+                getProductID= dbConn.rs.getString("productId");
+                txtSupplierPrice.setText(dbConn.rs.getString("supplierPrice"));
             }
         }catch(SQLException e){
             e.getMessage();
@@ -741,10 +742,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         int itemSelected = JOptionPane.showConfirmDialog(this, "DELETE RECORD?","DELETE",JOptionPane.YES_NO_OPTION);
         if (itemSelected==JOptionPane.YES_OPTION){
             try{
-                pstmt = conn.prepareStatement("DELETE FROM tblProduct where productId=?");
-                pstmt.setString(1,txtProductId.getText());
-                pstmt.executeUpdate();
-                pstmt.close();
+                dbConn.pstmt = dbConn.conn.prepareStatement("DELETE FROM tblProduct where productId=?");
+                dbConn.pstmt.setString(1,txtProductId.getText());
+                dbConn.pstmt.executeUpdate();
+                dbConn.pstmt.close();
                 JOptionPane.showMessageDialog(this, "RECORD DELETED");
                 saveAuditTrail("DELETED PRODUCT: " + txtProductName.getText());
                 clearTexts();
@@ -762,21 +763,21 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try{
-            pstmt = conn.prepareStatement("UPDATE tblProduct set favorite=? where favorite=?");
-            pstmt.setString(1,"0");
-            pstmt.setString(2,cmbFaveNumber.getSelectedItem().toString());
-            pstmt.executeUpdate();
-            pstmt.close();
+            dbConn.pstmt = dbConn.conn.prepareStatement("UPDATE tblProduct set favorite=? where favorite=?");
+            dbConn.pstmt.setString(1,"0");
+            dbConn.pstmt.setString(2,cmbFaveNumber.getSelectedItem().toString());
+            dbConn.pstmt.executeUpdate();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
             
         try{
-            pstmt = conn.prepareStatement("UPDATE tblProduct set favorite=? where productName=?");
-            pstmt.setString(1,cmbFaveNumber.getSelectedItem().toString());
-            pstmt.setString(2,cmbProduct.getSelectedItem().toString());
-            pstmt.executeUpdate();
-            pstmt.close();
+            dbConn.pstmt = dbConn.conn.prepareStatement("UPDATE tblProduct set favorite=? where productName=?");
+            dbConn.pstmt.setString(1,cmbFaveNumber.getSelectedItem().toString());
+            dbConn.pstmt.setString(2,cmbProduct.getSelectedItem().toString());
+            dbConn.pstmt.executeUpdate();
+            dbConn.pstmt.close();
             JOptionPane.showMessageDialog(this, "ITEM ADDED TO FAVORITE LIST");
             saveAuditTrail("ADDED TO FAVORITES: " + cmbProduct.getSelectedItem().toString() + 
                     "FOR #: " + cmbFaveNumber.getSelectedItem().toString());

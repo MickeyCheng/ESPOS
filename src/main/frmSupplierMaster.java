@@ -17,16 +17,17 @@ import static main.frmLogin.showUserName;
 import net.proteanit.sql.DbUtils;
 
 public class frmSupplierMaster extends javax.swing.JFrame {
-ResultSet rs;
-Connection conn;
-PreparedStatement pstmt;
+//ResultSet dbConn.rs;
+//Connection dbConn.conn;
+//PreparedStatement dbConn.pstmt;
 boolean add,edit;
 int getMaxID;
 int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+dbConnection dbConn = new dbConnection();
     public frmSupplierMaster() {
         initComponents();
-        doConnect();
+        dbConn.doConnect();
         clearTexts();
         lockTexts();
         fillTable();
@@ -39,10 +40,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
@@ -56,29 +57,29 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
     }
     private void getNextID(){
         try{
-            pstmt =conn.prepareStatement("SELECT sm_id from tblSupplierMaster order by sm_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxID = rs.getInt("sm_id");
+            dbConn.pstmt =dbConn.conn.prepareStatement("SELECT sm_id from tblSupplierMaster order by sm_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxID = dbConn.rs.getInt("sm_id");
                 getMaxID++;
             }else{
                 getMaxID = 1;
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -86,9 +87,9 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void fillTable(){
         try{
             String fillTable = "Select sm_id,sm_name,sm_contactnumber from tblSupplierMaster order by sm_name";
-            pstmt = conn.prepareStatement(fillTable);
-            rs = pstmt.executeQuery();
-            tblSupplierMaster.setModel(DbUtils.resultSetToTableModel(rs));
+            dbConn.pstmt = dbConn.conn.prepareStatement(fillTable);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblSupplierMaster.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             tblSupplierMaster.getColumnModel().getColumn(0).setHeaderValue("ID");
             tblSupplierMaster.getColumnModel().getColumn(1).setHeaderValue("NAME");
             tblSupplierMaster.getColumnModel().getColumn(2).setHeaderValue("CONTACT");
@@ -117,14 +118,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         txtSupplierName.setText("");
         txtContactPerson.setText("");
     }    
-    private void doConnect(){
-    try{
-        Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
-    }catch(SQLException | ClassNotFoundException e){
-        JOptionPane.showMessageDialog(this, e.getMessage());
-    }
-    }
+//    private void doConnect(){
+//    try{
+//        Class.forName("com.mysql.jdbc.Driver");
+//        dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+//    }catch(SQLException | ClassNotFoundException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -237,7 +238,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         lblID.setText("ID:");
         jPanel2.add(lblID, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 0, 290, 20));
 
-        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 590, 270));
+        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, 590, 270));
 
         btnEdit.setBackground(new java.awt.Color(255, 255, 255));
         btnEdit.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -251,7 +252,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnEditActionPerformed(evt);
             }
         });
-        jPanel4.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 280, 80, 70));
+        jPanel4.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 10, 80, 70));
 
         btnAdd.setBackground(new java.awt.Color(255, 255, 255));
         btnAdd.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -266,7 +267,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnAddActionPerformed(evt);
             }
         });
-        jPanel4.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 80, 70));
+        jPanel4.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 80, 70));
 
         btnDelete.setBackground(new java.awt.Color(255, 255, 255));
         btnDelete.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -280,7 +281,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnDeleteActionPerformed(evt);
             }
         });
-        jPanel4.add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 280, 80, 70));
+        jPanel4.add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 10, 80, 70));
 
         btnCancel.setBackground(new java.awt.Color(255, 255, 255));
         btnCancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -289,7 +290,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         btnCancel.setText("CANCEL");
         btnCancel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnCancel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jPanel4.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 280, 80, 70));
+        jPanel4.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 10, 80, 70));
 
         btnSave.setBackground(new java.awt.Color(255, 255, 255));
         btnSave.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -303,7 +304,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnSaveActionPerformed(evt);
             }
         });
-        jPanel4.add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 280, 80, 70));
+        jPanel4.add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 10, 80, 70));
 
         tblSupplierMaster.setBackground(new java.awt.Color(214, 214, 194));
         tblSupplierMaster.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
@@ -389,16 +390,16 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             try{
                 String insertTblProduct = "INSERT INTO tblSupplierMaster (sm_id,sm_name,sm_address,sm_contactnumber,sm_email,sm_poc) "
                         + "values (?,?,?,?,?,?)";
-                pstmt = conn.prepareStatement(insertTblProduct);
-                pstmt.setInt(1,getMaxID);
-                pstmt.setString(2,txtSupplierName.getText());
-                pstmt.setString(3, txtAddress.getText());
-                pstmt.setString(4,txtContactNumber.getText());
-                pstmt.setString(5, txtEmail.getText());
-                pstmt.setString(6, txtContactPerson.getText());
-                pstmt.execute();
+                dbConn.pstmt = dbConn.conn.prepareStatement(insertTblProduct);
+                dbConn.pstmt.setInt(1,getMaxID);
+                dbConn.pstmt.setString(2,txtSupplierName.getText());
+                dbConn.pstmt.setString(3, txtAddress.getText());
+                dbConn.pstmt.setString(4,txtContactNumber.getText());
+                dbConn.pstmt.setString(5, txtEmail.getText());
+                dbConn.pstmt.setString(6, txtContactPerson.getText());
+                dbConn.pstmt.execute();
                 JOptionPane.showMessageDialog(this, "SUPPLIER ADDED");
-                pstmt.close();
+                dbConn.pstmt.close();
                 fillTable();
                 saveAuditTrail("ADDED SUPPLIER: " + txtSupplierName.getText());
                 clearTexts();
@@ -410,16 +411,16 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             try{
                 String UpdateTblSupplier = "UPDATE tblSupplierMaster set sm_name=?,sm_address=?"
                         + ",cm_contactnumber=?=?,sm_email=?,sm_poc=? where sm_id=?";
-                pstmt = conn.prepareStatement(UpdateTblSupplier);
-                pstmt.setString(1,txtSupplierName.getText());
-                pstmt.setString(2, txtAddress.getText());
-                pstmt.setString(3,txtContactNumber.getText());
-                pstmt.setString(4, txtEmail.getText());
-                pstmt.setString(5, txtContactPerson.getText());
-                pstmt.setInt(6,Integer.valueOf(lblID.getText()));
-                pstmt.execute();
+                dbConn.pstmt = dbConn.conn.prepareStatement(UpdateTblSupplier);
+                dbConn.pstmt.setString(1,txtSupplierName.getText());
+                dbConn.pstmt.setString(2, txtAddress.getText());
+                dbConn.pstmt.setString(3,txtContactNumber.getText());
+                dbConn.pstmt.setString(4, txtEmail.getText());
+                dbConn.pstmt.setString(5, txtContactPerson.getText());
+                dbConn.pstmt.setInt(6,Integer.valueOf(lblID.getText()));
+                dbConn.pstmt.execute();
                 JOptionPane.showMessageDialog(this, "SUPPLIER UPDATED");
-                pstmt.close();
+                dbConn.pstmt.close();
                 fillTable();
                 saveAuditTrail("EDITED SUPPLIER: " + txtSupplierName.getText());
                 clearTexts();
@@ -437,18 +438,18 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String tblClick = (tblSupplierMaster.getModel().getValueAt(ba, 0).toString());
             String tableQuery = "Select * from tblSupplierMaster where sm_id=?";
-            pstmt = conn.prepareStatement(tableQuery);
-            pstmt.setString(1, tblClick);
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                txtSupplierName.setText(rs.getString("sm_name"));
-                lblID.setText(String.valueOf(rs.getInt("sm_id")));
-                txtContactNumber.setText(rs.getString("sm_contactnumber"));
-                txtEmail.setText(String.valueOf(rs.getInt("sm_email")));
-                txtContactPerson.setText(rs.getString("sm_poc"));
-                txtAddress.setText(rs.getString("sm_address"));
+            dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
+            dbConn.pstmt.setString(1, tblClick);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                txtSupplierName.setText(dbConn.rs.getString("sm_name"));
+                lblID.setText(String.valueOf(dbConn.rs.getInt("sm_id")));
+                txtContactNumber.setText(dbConn.rs.getString("sm_contactnumber"));
+                txtEmail.setText(String.valueOf(dbConn.rs.getInt("sm_email")));
+                txtContactPerson.setText(dbConn.rs.getString("sm_poc"));
+                txtAddress.setText(dbConn.rs.getString("sm_address"));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }

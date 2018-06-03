@@ -14,17 +14,17 @@ import static main.frmLogin.showUserName;
 import net.proteanit.sql.DbUtils;
 
 public class frmStockAdjust extends javax.swing.JFrame {
-ResultSet rs;
-Connection conn;
-PreparedStatement pstmt;
+//ResultSet dbConn.rs;
+//Connection dbConn.conn;
+//PreparedStatement dbConn.pstmt;
 int i=0,j=0;
 String getProdId;
 int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
-
+dbConnection dbConn = new dbConnection();
     public frmStockAdjust() {
         initComponents();
-        doConnect();
+        dbConn.doConnect();
         fillTable();
         setLocationRelativeTo(null);
         cmbAdjust.removeAllItems();
@@ -46,10 +46,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
@@ -63,14 +63,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -78,11 +78,11 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void listenSearch(){
         try{
             String searchSQL = "Select * from tblProduct where productId like? OR productName like?";
-            pstmt = conn.prepareStatement(searchSQL);
-            pstmt.setString(1, "%"+txtSearch.getText()+"%");
-            pstmt.setString(2, "%"+txtSearch.getText()+"%");
-            rs = pstmt.executeQuery();
-            tableProduct.setModel(DbUtils.resultSetToTableModel(rs));
+            dbConn.pstmt = dbConn.conn.prepareStatement(searchSQL);
+            dbConn.pstmt.setString(1, "%"+txtSearch.getText()+"%");
+            dbConn.pstmt.setString(2, "%"+txtSearch.getText()+"%");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tableProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             sortTable();
        }catch(SQLException e){
             e.getMessage();
@@ -91,9 +91,9 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
        }
     private void fillTable(){
         try{
-            pstmt = conn.prepareStatement("Select * from tblProduct order by category");
-            rs = pstmt.executeQuery();
-            tableProduct.setModel(DbUtils.resultSetToTableModel(rs));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct order by category");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tableProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             sortTable();
         }catch(SQLException e){
             e.getMessage();
@@ -111,7 +111,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 private void doConnect(){
 try{
     Class.forName("com.mysql.jdbc.Driver");
-    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+    dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
 }catch(SQLException | ClassNotFoundException e){
     JOptionPane.showMessageDialog(this, e.getMessage());
 }
@@ -336,18 +336,18 @@ try{
         String tblClick = (tableProduct.getModel().getValueAt(ba, 0).toString());
         String selectedItem = "Select * from tblProduct where productId =?";
         try{
-            pstmt = conn.prepareStatement(selectedItem);
-            pstmt.setString(1, tblClick);
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblProdId.setText(rs.getString("productId"));
-                lblProdName.setText(rs.getString("productName"));
-                lblPrice.setText(rs.getString("unitPrice"));
-                lblCategory.setText(rs.getString("category"));
-                lblStock.setText(String.valueOf(rs.getInt("stockOnHand")));
+            dbConn.pstmt = dbConn.conn.prepareStatement(selectedItem);
+            dbConn.pstmt.setString(1, tblClick);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblProdId.setText(dbConn.rs.getString("productId"));
+                lblProdName.setText(dbConn.rs.getString("productName"));
+                lblPrice.setText(dbConn.rs.getString("unitPrice"));
+                lblCategory.setText(dbConn.rs.getString("category"));
+                lblStock.setText(String.valueOf(dbConn.rs.getInt("stockOnHand")));
                 getProdId = tblClick;
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -357,17 +357,17 @@ try{
         try{
             if (lblStock.getText().equals("0")){
                 String adjustSQL = "UPDATE tblProduct set stockOnhand=? where productId=?";
-                pstmt = conn.prepareStatement(adjustSQL);
-                pstmt.setString(1,cmbAdjust.getSelectedItem().toString());
-                pstmt.setString(2, getProdId);
+                dbConn.pstmt = dbConn.conn.prepareStatement(adjustSQL);
+                dbConn.pstmt.setString(1,cmbAdjust.getSelectedItem().toString());
+                dbConn.pstmt.setString(2, getProdId);
             }else{
                 String adjustSQL = "UPDATE tblProduct set stockOnhand=stockOnHand+? where productId=?";
-                pstmt = conn.prepareStatement(adjustSQL);
-                pstmt.setString(1,cmbAdjust.getSelectedItem().toString());
-                pstmt.setString(2, getProdId);
+                dbConn.pstmt = dbConn.conn.prepareStatement(adjustSQL);
+                dbConn.pstmt.setString(1,cmbAdjust.getSelectedItem().toString());
+                dbConn.pstmt.setString(2, getProdId);
             }
-            pstmt.executeUpdate();
-            pstmt.close();
+            dbConn.pstmt.executeUpdate();
+            dbConn.pstmt.close();
             JOptionPane.showMessageDialog(this, "QTY ADJUSTED");
             saveAuditTrail("ADJUSTED + STOCK FOR: " + getProdId +
                     " BY: " + cmbAdjust.getSelectedItem().toString());
@@ -387,11 +387,11 @@ try{
                     JOptionPane.showMessageDialog(this, "WILL RESULT TO NEGATIVE QTY","NEGATIVE",JOptionPane.ERROR_MESSAGE);
                 }else{
                 String adjustSQL = "UPDATE tblProduct set stockOnhand=stockOnHand-? where productId=?";
-                    pstmt = conn.prepareStatement(adjustSQL);
-                    pstmt.setString(1,setStock);
-                    pstmt.setString(2, getProdId);
-                    pstmt.executeUpdate();
-                    pstmt.close();
+                    dbConn.pstmt = dbConn.conn.prepareStatement(adjustSQL);
+                    dbConn.pstmt.setString(1,setStock);
+                    dbConn.pstmt.setString(2, getProdId);
+                    dbConn.pstmt.executeUpdate();
+                    dbConn.pstmt.close();
                     JOptionPane.showMessageDialog(this, "QTY ADJUSTED");
             saveAuditTrail("ADJUSTED - STOCK FOR: " + getProdId +
                     " BY: " + cmbAdjust1.getSelectedItem().toString());
@@ -412,9 +412,9 @@ fillTable();
         obj.setVisible(true);
         this.dispose();
         try{
-            conn.close();
-            rs.close();
-            pstmt.close();
+            dbConn.conn.close();
+            dbConn.rs.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }

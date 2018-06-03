@@ -33,6 +33,7 @@ DecimalFormat df = new DecimalFormat("0.000");
 SimpleDateFormat tdf = new SimpleDateFormat("dd/M/YYYY");
 String getCardSalesRange,getCashSalesRange,getFocRange;
 int getMaxAuditID;
+dbConnection dbConn = new dbConnection();
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     public frmReceiptTable() {
         initComponents();
@@ -442,7 +443,7 @@ private void fillTable(){
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
             displayDailySales();
             Map param = new HashMap();
-            param.put("date", String.valueOf(tdf.format(datePicker.getDate())));
+            param.put("date", String.valueOf(dbConn.sdfDateGlobal.format(datePicker.getDate())));
             param.put("cardSales", lblDailyCard.getText());
             param.put("cashSales", lblDailyCash.getText());
             param.put("focData", lblDailyFoc.getText());

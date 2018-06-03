@@ -28,9 +28,9 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.view.JasperViewer;
 
 public class frmReports extends javax.swing.JFrame {
-ResultSet rs;
-Connection conn;
-PreparedStatement pstmt;
+//ResultSet dbConn.rs;
+//Connection dbConn.conn;
+//PreparedStatement dbConn.pstmt;
 int getMaxExpenseID;
 String getTransactionId,getPOStatus;
 DecimalFormat dfo = new DecimalFormat("0.000");
@@ -40,9 +40,10 @@ SimpleDateFormat sdfDate = new SimpleDateFormat("dd-MM-yyyy");
 String getCardSalesRange,getCashSalesRange,getFocRange;
 int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+dbConnection dbConn = new dbConnection();
     public frmReports() {
         initComponents();
-        doConnect();
+        dbConn.doConnect();
         fillTablepanReceipt();
         fillComboSupplier();    
         fillComboLPO();
@@ -54,7 +55,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         fillAuditTrail();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(frmReports.DISPOSE_ON_CLOSE);
-        //listeners
+        //listenedbConn.rs
         txtProductName.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {listenToTextItem();}
@@ -70,10 +71,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
@@ -87,14 +88,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,frmLogin.showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,frmLogin.showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -108,10 +109,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void fillAuditTrail(){
         try{
-            pstmt = conn.prepareStatement("Select * from tblAuditTrail order by at_dateandTime DESC");
-            rs = pstmt.executeQuery();
-            tblAuditTrail.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblAuditTrail order by at_dateandTime DESC");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblAuditTrail.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             tblAuditTrail.getColumnModel().getColumn(0).setHeaderValue("ID");
             tblAuditTrail.getColumnModel().getColumn(1).setHeaderValue("TRANSACTION");
             tblAuditTrail.getColumnModel().getColumn(2).setHeaderValue("DATE AND TIME");
@@ -134,10 +135,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void fillTablepanReceipt(){
     try{
-        pstmt = conn.prepareStatement("Select transactionId, productName,quantity,paymentMethod,date,time "
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select transactionId, productName,quantity,paymentMethod,date,time "
                 + "from tblReceipt order by transactionId DESC");
-        rs = pstmt.executeQuery();
-        tableReceipt.setModel(DbUtils.resultSetToTableModel(rs));
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        tableReceipt.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
         tableReceipt.getColumnModel().getColumn(0).setHeaderValue("ID");
         tableReceipt.getColumnModel().getColumn(1).setHeaderValue("PRODUCT");
         tableReceipt.getColumnModel().getColumn(2).setHeaderValue("QTY");
@@ -148,14 +149,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         e.getMessage();
     }
 }
-    private void doConnect(){
-    try{
-        Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
-    }catch(SQLException | ClassNotFoundException e){
-        JOptionPane.showMessageDialog(this, e.getMessage());
-    }
-    }
+//    private void doConnect(){
+//    try{
+//        Class.forName("com.mysql.jdbc.Driver");
+//        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+//    }catch(SQLException | ClassNotFoundException e){
+//        JOptionPane.showMessageDialog(this, e.getMessage());
+//    }
+//    }
     
     //panProduct
     private void fillProductPrint(){
@@ -165,28 +166,28 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void fillTableProduct(){
      try{
-            pstmt = conn.prepareStatement("SELECT productId,productName,"
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,"
                     + "stockOnHand,supplier,supplierPrice from tblProduct order by productName");
-            rs = pstmt.executeQuery();
-            tblProduct.setModel(DbUtils.resultSetToTableModel(rs));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             tblProduct.getColumnModel().getColumn(0).setHeaderValue("SKU");
             tblProduct.getColumnModel().getColumn(1).setHeaderValue("ITEM");
             tblProduct.getColumnModel().getColumn(2).setHeaderValue("SOH");
             tblProduct.getColumnModel().getColumn(3).setHeaderValue("SUPPLIER");
             tblProduct.getColumnModel().getColumn(4).setHeaderValue("SUP PRICE");
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
     }
     private void listenComboSupplier(){
         try{
-            pstmt = conn.prepareStatement("SELECT productId,productName,"
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,"
                     + "stockOnHand,supplier,supplierPrice from tblProduct where supplier = ?");
-            pstmt.setString(1,cmbSupplier.getSelectedItem().toString());
-            rs = pstmt.executeQuery();
-            tblProduct.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt.setString(1,cmbSupplier.getSelectedItem().toString());
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             tblProduct.getColumnModel().getColumn(0).setHeaderValue("SKU");
             tblProduct.getColumnModel().getColumn(1).setHeaderValue("ITEM");
             tblProduct.getColumnModel().getColumn(2).setHeaderValue("SOH");
@@ -198,14 +199,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void listenToTextItem(){
         try{
-            pstmt = conn.prepareStatement("SELECT productId,productName,"
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,"
                     + "stockOnHand,supplier,supplierPrice from tblProduct where productName like ?");
-            pstmt.setString(1, "%"+ txtProductName.getText() + "%");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                cmbSupplier.setSelectedItem(rs.getString("supplier"));
+            dbConn.pstmt.setString(1, "%"+ txtProductName.getText() + "%");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                cmbSupplier.setSelectedItem(dbConn.rs.getString("supplier"));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }  
@@ -213,12 +214,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void fillComboSupplier(){
         cmbSupplier.removeAllItems();
         try{
-            pstmt = conn.prepareStatement("select sm_name from tblSupplierMaster order by sm_name");
-            rs = pstmt.executeQuery();
-            while (rs.next()){
-                cmbSupplier.addItem(rs.getString("sm_name"));
+            dbConn.pstmt = dbConn.conn.prepareStatement("select sm_name from tblSupplierMaster order by sm_name");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            while (dbConn.rs.next()){
+                cmbSupplier.addItem(dbConn.rs.getString("sm_name"));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
             cmbSupplier.setSelectedIndex(-1);
         }catch(SQLException e){
             e.getMessage();
@@ -1293,12 +1294,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             Map param = new HashMap();
             saveAuditTrail("PRINTED PRODUCT REPORT BY SUPPLIER");
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repProductBySupplier.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
 
         }catch(ClassNotFoundException | SQLException | JRException e){
@@ -1308,12 +1309,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             Map param = new HashMap();
             saveAuditTrail("PRINTED PRODUCT REPORT BY CATEGORY");
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repProductByCategory.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
 
         }catch(ClassNotFoundException | SQLException | JRException e){
@@ -1329,13 +1330,13 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         String tableQuery = "SELECT * from tblReceipt where transactionId=?";
 
         try{
-            pstmt = conn.prepareStatement(tableQuery);
-            pstmt.setString(1, getTransactionId);
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblAmountPaid.setText(String.valueOf(df.format(rs.getFloat("amountPaid"))));
-                lblChange.setText(String.valueOf(df.format(rs.getFloat("amountChange"))));
-                lblTotalAmount.setText(String.valueOf(df.format(rs.getFloat("totalAmount"))));
+            dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
+            dbConn.pstmt.setString(1, getTransactionId);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblAmountPaid.setText(String.valueOf(df.format(dbConn.rs.getFloat("amountPaid"))));
+                lblChange.setText(String.valueOf(df.format(dbConn.rs.getFloat("amountChange"))));
+                lblTotalAmount.setText(String.valueOf(df.format(dbConn.rs.getFloat("totalAmount"))));
             }
         }catch(SQLException e){
             e.getMessage();
@@ -1347,12 +1348,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         param.put("tranId", getTransactionId);
         saveAuditTrail("REPRINTED RECEIPT #: " + String.valueOf(getTransactionId));
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repReceipt.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
 
         }catch(ClassNotFoundException | SQLException | JRException e){
@@ -1362,58 +1363,58 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }//GEN-LAST:event_jButton2ActionPerformed
     private void displayDailySales(){
         try{
-            pstmt = conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
-            pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
-            pstmt.setString(2,"CASH");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblDailyCash.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
+            dbConn.pstmt.setString(2,"CASH");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblDailyCash.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }else{
                 lblDailyCash.setText("0.000");
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
-            pstmt = conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
-            pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
-            pstmt.setString(2,"CARD");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblDailyCard.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
+            dbConn.pstmt.setString(2,"CARD");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblDailyCard.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }else{
                 lblDailyCard.setText("0.000");
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
-            pstmt = conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
-            pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
-            pstmt.setString(2,"FOC");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblDailyFoc.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
+            dbConn.pstmt.setString(2,"FOC");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblDailyFoc.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }else{
                 lblDailyFoc.setText("0.000");
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
     private void displaySalesRange(){
         try{
-            pstmt = conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
                     + "date between ? and ? and paymentMethod=?");
-            pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
-            pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
-            pstmt.setString(3,"CASH");
-            rs = pstmt.executeQuery();
-            if(rs.next()){
-                getCashSalesRange = String.valueOf(df.format(rs.getDouble(1)));
+            dbConn.pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
+            dbConn.pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
+            dbConn.pstmt.setString(3,"CASH");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if(dbConn.rs.next()){
+                getCashSalesRange = String.valueOf(df.format(dbConn.rs.getDouble(1)));
             }else{
                 getCashSalesRange = "0.000";
             }
@@ -1422,14 +1423,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         }
         
             try{
-            pstmt = conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
                     + "date between ? and ? and paymentMethod=?");
-            pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
-            pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
-            pstmt.setString(3,"CARD");
-            rs = pstmt.executeQuery();
-            if(rs.next()){
-                getCardSalesRange = String.valueOf(df.format(rs.getDouble(1)));
+            dbConn.pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
+            dbConn.pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
+            dbConn.pstmt.setString(3,"CARD");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if(dbConn.rs.next()){
+                getCardSalesRange = String.valueOf(df.format(dbConn.rs.getDouble(1)));
             }else{
                 getCardSalesRange = "0.000";
             }
@@ -1438,14 +1439,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         }
             
             try{
-            pstmt = conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
                     + "date between ? and ? and paymentMethod=?");
-            pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
-            pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
-            pstmt.setString(3,"FOC");
-            rs = pstmt.executeQuery();
-            if(rs.next()){
-                getFocRange= String.valueOf(df.format(rs.getDouble(1)));
+            dbConn.pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
+            dbConn.pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
+            dbConn.pstmt.setString(3,"FOC");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if(dbConn.rs.next()){
+                getFocRange= String.valueOf(df.format(dbConn.rs.getDouble(1)));
             }else{
                 getFocRange = "0.000";
             }
@@ -1462,12 +1463,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         param.put("focData", lblDailyFoc.getText());
         saveAuditTrail("VIEWED SALES FOR: " + String.valueOf(tdf.format(datePicker.getDate())));   
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repSalesSummary.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1486,12 +1487,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         saveAuditTrail("VIEWED SALES FROM " + String.valueOf(tdf.format(dateFrom.getDate()))
             +" TO" + String.valueOf(tdf.format(dateTo.getDate())));
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repSalesDates.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1500,10 +1501,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 
     private void btnShowAllExpenseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowAllExpenseActionPerformed
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblExpense order by ex_date DESC");
-            rs = pstmt.executeQuery();
-            tblExpense.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblExpense order by ex_date DESC");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblExpense.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             sortTableExpense();
         }catch(SQLException e){
             e.getMessage();
@@ -1519,26 +1520,26 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         Date getFromExpense = dateFromExpense.getDate();
         Date getToExpense = dateToExpense.getDate();
         try{
-            pstmt = conn.prepareStatement("Select * from tblExpense where ex_date between ? and ? order by ex_date DESC");
-            pstmt.setString(1, String.valueOf(sdfDate.format(getFromExpense)));
-            pstmt.setString(2, String.valueOf(sdfDate.format(getToExpense)));
-            rs = pstmt.executeQuery();
-            tblExpense.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblExpense where ex_date between ? and ? order by ex_date DESC");
+            dbConn.pstmt.setString(1, String.valueOf(sdfDate.format(getFromExpense)));
+            dbConn.pstmt.setString(2, String.valueOf(sdfDate.format(getToExpense)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblExpense.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             sortTableExpense();
         }catch(SQLException e){
             e.getMessage();
         }
         try{
-            pstmt = conn.prepareStatement("SELECT sum(ex_amount) from tblExpense where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(ex_amount) from tblExpense where "
                     + "ex_date between ? and ?");
-            pstmt.setString(1, String.valueOf(sdfDate.format(getFromExpense)));
-            pstmt.setString(2, String.valueOf(sdfDate.format(getToExpense)));
-            rs = pstmt.executeQuery();
-            if(rs.next()){
-                lblTotalExpenseShow.setText(df.format(Double.valueOf(rs.getString(1))));
+            dbConn.pstmt.setString(1, String.valueOf(sdfDate.format(getFromExpense)));
+            dbConn.pstmt.setString(2, String.valueOf(sdfDate.format(getToExpense)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if(dbConn.rs.next()){
+                lblTotalExpenseShow.setText(df.format(Double.valueOf(dbConn.rs.getString(1))));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException ex){
             ex.getMessage();
         }
@@ -1552,23 +1553,23 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{    
             String getSalesQuery = "Select sum(bdPrice) from tblReceipt where "
                     + "paymentMethod<>? and date between ? and ?";
-            pstmt = conn.prepareStatement(getSalesQuery);
-            pstmt.setString(1,"FOC");
-            pstmt.setString(2, String.valueOf(tdf.format(getFromIncome)));
-            pstmt.setString(3, String.valueOf(tdf.format(getToIncome)));
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblTotalSalesIncome.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt = dbConn.conn.prepareStatement(getSalesQuery);
+            dbConn.pstmt.setString(1,"FOC");
+            dbConn.pstmt.setString(2, String.valueOf(tdf.format(getFromIncome)));
+            dbConn.pstmt.setString(3, String.valueOf(tdf.format(getToIncome)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblTotalSalesIncome.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
                 try{
-                    pstmt = conn.prepareStatement("select transactionId,productName,bdPrice,date,paymentMethod "
+                    dbConn.pstmt = dbConn.conn.prepareStatement("select transactionId,productName,bdPrice,date,paymentMethod "
                             + "from tblReceipt where date between ? and ? order by date DESC");
-                    pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
-                    pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
-                    rs = pstmt.executeQuery();
-                    tblSalesIncome.setModel(DbUtils.resultSetToTableModel(rs));
-                    pstmt.close();
+                    dbConn.pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
+                    dbConn.pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
+                    dbConn.rs = dbConn.pstmt.executeQuery();
+                    tblSalesIncome.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+                    dbConn.pstmt.close();
                     sortTablesIncome();
                 }catch(SQLException ex){
                     ex.getMessage();
@@ -1579,16 +1580,16 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         
         //getFOC
         try{
-            pstmt = conn.prepareStatement("Select sum(bdPrice) from tblReceipt where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where "
                     + "paymentMethod=? and date between ? and ?");
-            pstmt.setString(1,"FOC");
-            pstmt.setString(2, String.valueOf(tdf.format(getFromIncome)));
-            pstmt.setString(3, String.valueOf(tdf.format(getToIncome)));
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblTotalFOCIncome.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt.setString(1,"FOC");
+            dbConn.pstmt.setString(2, String.valueOf(tdf.format(getFromIncome)));
+            dbConn.pstmt.setString(3, String.valueOf(tdf.format(getToIncome)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblTotalFOCIncome.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException ex){
             ex.getMessage();
         }
@@ -1596,22 +1597,22 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         
         //getExpense
         try{
-            pstmt = conn.prepareStatement("Select sum(ex_amount) from tblExpense where ex_date between ? and ?");
-            pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
-            pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblTotalExpenseIncome.setText(String.valueOf(df.format(rs.getDouble(1))));
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(ex_amount) from tblExpense where ex_date between ? and ?");
+            dbConn.pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
+            dbConn.pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblTotalExpenseIncome.setText(String.valueOf(df.format(dbConn.rs.getDouble(1))));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
                 try{
-                    pstmt = conn.prepareStatement("select * from tblExpense where ex_date between ? and ? "
+                    dbConn.pstmt = dbConn.conn.prepareStatement("select * from tblExpense where ex_date between ? and ? "
                             + "order by ex_date DESC");
-                    pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
-                    pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
-                    rs = pstmt.executeQuery();
-                    tblExpenseIncome.setModel(DbUtils.resultSetToTableModel(rs));
-                    pstmt.close();
+                    dbConn.pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
+                    dbConn.pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
+                    dbConn.rs = dbConn.pstmt.executeQuery();
+                    tblExpenseIncome.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+                    dbConn.pstmt.close();
                     sortTablesIncome();
                 }catch(SQLException ex){
                     JOptionPane.showMessageDialog(this, ex.getMessage());
@@ -1638,13 +1639,13 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         Date getDateFromLPO = dateFromLPO.getDate();
         Date getDateToLPO = dateToLPO.getDate();
         try{
-            pstmt = conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount, po_lpoDate from "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount, po_lpoDate from "
                 + "tblPurchaseOrder where po_lpoDate between ? and ?");
-            pstmt.setString(1,String.valueOf(sdfDate.format(getDateFromLPO)));
-            pstmt.setString(2,String.valueOf(sdfDate.format(getDateToLPO)));
-            rs = pstmt.executeQuery();
-            tblLPOPayment.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt.setString(1,String.valueOf(sdfDate.format(getDateFromLPO)));
+            dbConn.pstmt.setString(2,String.valueOf(sdfDate.format(getDateToLPO)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblLPOPayment.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             sortTableLPOPay();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1652,11 +1653,11 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }//GEN-LAST:event_jButton6ActionPerformed
     private void fillLPOPayment(){
         try{
-            pstmt = conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount,po_lpoDate from tblPurchaseOrder"
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount,po_lpoDate from tblPurchaseOrder"
                     + " order by po_lpoDate");
-            rs = pstmt.executeQuery();
-            tblLPOPayment.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblLPOPayment.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             tblLPOPayment.getColumnModel().getColumn(0).setHeaderValue("LPO");
             tblLPOPayment.getColumnModel().getColumn(1).setHeaderValue("SUPPLIER");
             tblLPOPayment.getColumnModel().getColumn(2).setHeaderValue("RECEIVED");
@@ -1676,32 +1677,32 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         String tblClick = tblLPOPayment.getModel().getValueAt(ba, 0).toString();
         String fetchData = "SELECT * from tblPurchaseOrder where po_Id=?";
         try{
-            pstmt  = conn.prepareStatement(fetchData);
-            pstmt.setInt(1, Integer.valueOf(tblClick));
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblLPONumber.setText(String.valueOf(rs.getInt("po_Id")));
-                lblSupplier.setText(rs.getString("po_supplier"));
-                getPOStatus = rs.getString("po_status");
+            dbConn.pstmt  = dbConn.conn.prepareStatement(fetchData);
+            dbConn.pstmt.setInt(1, Integer.valueOf(tblClick));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblLPONumber.setText(String.valueOf(dbConn.rs.getInt("po_Id")));
+                lblSupplier.setText(dbConn.rs.getString("po_supplier"));
+                getPOStatus = dbConn.rs.getString("po_status");
                 txtAmountPaid.requestFocus();
             }
-            pstmt.close();
-            rs.close();
+            dbConn.pstmt.close();
+            dbConn.rs.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         
         try{
             String fetchDataSum = "SELECT sum(po_payableAmount) from tblPurchaseOrder where po_Id=?";
-            pstmt = conn.prepareStatement(fetchDataSum);
-            pstmt.setInt(1, Integer.valueOf(tblClick));
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                lblTotalAmountLPOPayment.setText(rs.getString(1));
-                double getTotalAmountPayment = Double.parseDouble(lblTotalAmountLPOPayment.getText());
+            dbConn.pstmt = dbConn.conn.prepareStatement(fetchDataSum);
+            dbConn.pstmt.setInt(1, Integer.valueOf(tblClick));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                lblTotalAmountLPOPayment.setText(dbConn.rs.getString(1));
+                double getTotalAmountPayment = Double.valueOf(lblTotalAmountLPOPayment.getText());
                 lblTotalAmountLPOPayment.setText(dfo.format(getTotalAmountPayment));
             }
-            pstmt.close();
+            dbConn.pstmt.close();
         }catch(SQLException ex){
             ex.getMessage();
         }
@@ -1712,10 +1713,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }//GEN-LAST:event_tblLPOPaymentMouseEntered
     private void getNextExpense(){
             try{
-                pstmt  = conn.prepareStatement("SELECT ex_id from tblExpense order by ex_id DESC LIMIT 1");
-                rs = pstmt.executeQuery();
-                if(rs.next()){
-                    getMaxExpenseID = rs.getInt(1);
+                dbConn.pstmt  = dbConn.conn.prepareStatement("SELECT ex_id from tblExpense order by ex_id DESC LIMIT 1");
+                dbConn.rs = dbConn.pstmt.executeQuery();
+                if(dbConn.rs.next()){
+                    getMaxExpenseID = dbConn.rs.getInt(1);
                     getMaxExpenseID++;
                 }else{
                     getMaxExpenseID=1;
@@ -1729,12 +1730,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             JOptionPane.showMessageDialog(this, "LPO IS PAID ALREADY","LPO PAID",JOptionPane.WARNING_MESSAGE);
         }else{
             try{
-                pstmt = conn.prepareStatement("update tblPurchaseOrder set po_status=?, po_paidAmount=? where po_Id=?");
-                pstmt.setString(1,"PAID");
-                pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
-                pstmt.setInt(3,Integer.valueOf(lblLPONumber.getText()));
-                pstmt.executeUpdate();
-                pstmt.close();
+                dbConn.pstmt = dbConn.conn.prepareStatement("update tblPurchaseOrder set po_status=?, po_paidAmount=? where po_Id=?");
+                dbConn.pstmt.setString(1,"PAID");
+                dbConn.pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
+                dbConn.pstmt.setInt(3,Integer.valueOf(lblLPONumber.getText()));
+                dbConn.pstmt.executeUpdate();
+                dbConn.pstmt.close();
                 JOptionPane.showMessageDialog(this, "LPO PAYMENT PROCESSED");
                 saveAuditTrail("PROCESSED LPO PAYMENT FOR #: " + lblLPONumber.getText());
             }catch(SQLException e){
@@ -1744,15 +1745,15 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             //add to expense
             try{
                 getNextExpense();
-                pstmt = conn.prepareStatement("INSERT INTO tblExpense(ex_id,ex_amount,ex_comment,ex_date)"
+                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblExpense(ex_id,ex_amount,ex_comment,ex_date)"
                     + "values(?,?,?,?)");
-                pstmt.setInt(1, getMaxExpenseID);
-                pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
-                pstmt.setString(3,"FOR LPO #: " + lblLPONumber.getText());
+                dbConn.pstmt.setInt(1, getMaxExpenseID);
+                dbConn.pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
+                dbConn.pstmt.setString(3,"FOR LPO #: " + lblLPONumber.getText());
                 Date dateToday = new Date();
-                pstmt.setString(4,String.valueOf(sdfDate.format(dateToday)));
-                pstmt.execute();
-                pstmt.close();
+                dbConn.pstmt.setString(4,String.valueOf(sdfDate.format(dateToday)));
+                dbConn.pstmt.execute();
+                dbConn.pstmt.close();
                 lblLPONumber.setText("");
                 lblTotalAmountLPOPayment.setText("");
                 lblSupplier.setText("");
@@ -1772,12 +1773,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         saveAuditTrail("VIEWED EXPENSE FROM " + String.valueOf(tdf.format(dateFromExpense.getDate())) 
                 + " TO" + String.valueOf(tdf.format(dateToExpense.getDate())));
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repExpense.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1795,12 +1796,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         saveAuditTrail("VIEWED INCOME FROM " + String.valueOf(tdf.format(dateFromIncome.getDate())) 
                 + " TO" + String.valueOf(tdf.format(dateToIncome.getDate())));
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repIncome.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1814,12 +1815,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         saveAuditTrail("VIEWED LPO REPORT FROM " + String.valueOf(tdf.format(dateFromLPO.getDate())) 
                 + " TO" + String.valueOf(tdf.format(dateToLPO.getDate())));
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repLPOReport.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1834,12 +1835,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         saveAuditTrail("VIEWED LPO REPORT FROM " + String.valueOf(tdf.format(dateFromLPO.getDate())) 
                 + " TO" + String.valueOf(tdf.format(dateToLPO.getDate())));
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repLPOStatus.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -1850,13 +1851,13 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         Date getDateFromAudit = dateFromAudit.getDate();
         Date getDateToAudit = dateToAudit.getDate();
         try{
-            pstmt = conn.prepareStatement("Select * from tblAuditTrail where at_dateAndTime between"
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblAuditTrail where at_dateAndTime between"
                     + " ? and ? order by at_dateandTime DESC");
-            pstmt.setString(1,String.valueOf(sdfAudit.format(getDateFromAudit)));
-            pstmt.setString(2,String.valueOf(sdfAudit.format(getDateToAudit)));
-            rs = pstmt.executeQuery();
-            tblAuditTrail.setModel(DbUtils.resultSetToTableModel(rs));
-            pstmt.close();
+            dbConn.pstmt.setString(1,String.valueOf(sdfAudit.format(getDateFromAudit)));
+            dbConn.pstmt.setString(2,String.valueOf(sdfAudit.format(getDateToAudit)));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tblAuditTrail.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
             tblAuditTrail.getColumnModel().getColumn(0).setHeaderValue("ID");
             tblAuditTrail.getColumnModel().getColumn(1).setHeaderValue("TRANSACTION");
             tblAuditTrail.getColumnModel().getColumn(2).setHeaderValue("DATE AND TIME");
@@ -1877,12 +1878,12 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         saveAuditTrail("VIEWED AUDIT TRAIL FROM " + String.valueOf(tdf.format(dateFromAudit.getDate())) 
                 + " TO" + String.valueOf(tdf.format(dateToAudit.getDate())));
         try{
-            conn.close();
+            dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repAuditTrail.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
         }catch(ClassNotFoundException | SQLException | JRException e){
             JOptionPane.showMessageDialog(this, e.getMessage());

@@ -12,13 +12,14 @@ import static main.frmLogin.showUserName;
 import net.proteanit.sql.DbUtils;
 
 public class frmUserControl extends javax.swing.JFrame {
-ResultSet rs;
-Connection conn;
-PreparedStatement pstmt;
+//ResultSet dbConn.rs;
+//Connection dbConn.conn;
+//PreparedStatement pstmt;
 boolean add, edit;
 String getAccountName;
 int getMaxAuditID;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+dbConnection dbConn = new dbConnection();
     public frmUserControl() {
         initComponents();
         doConnect();
@@ -31,10 +32,10 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     }
     private void getNextAuditID(){
         try{
-            pstmt = conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
-            rs = pstmt.executeQuery();
-            if (rs.next()){
-                getMaxAuditID = rs.getInt(1);
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getMaxAuditID = dbConn.rs.getInt(1);
                 getMaxAuditID++;
             }else{
                 getMaxAuditID = 1;
@@ -48,14 +49,14 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
-            pstmt = conn.prepareStatement(saveAuditQuery);
-            pstmt.setInt(1, getMaxAuditID);
-            pstmt.setString(2,getTransaction);
+            dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
+            dbConn.pstmt.setInt(1, getMaxAuditID);
+            dbConn.pstmt.setString(2,getTransaction);
             Date getDateAudit = new Date();
-            pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
-            pstmt.setString(4,showUserName);
-            pstmt.execute();
-            pstmt.close();
+            dbConn.pstmt.setString(3,String.valueOf(sdfAudit.format(getDateAudit)));
+            dbConn.pstmt.setString(4,showUserName);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
         }catch(SQLException e){
             e.getMessage();
         }
@@ -89,9 +90,9 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void fillTable(){
         try{
             String fillUserTable = "Select accountName,userName,position from tblusercontrol";
-            pstmt = conn.prepareStatement(fillUserTable);
-            rs = pstmt.executeQuery();
-            tableUserControl.setModel(DbUtils.resultSetToTableModel(rs));
+            dbConn.pstmt = dbConn.conn.prepareStatement(fillUserTable);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tableUserControl.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             sortTable();
         }catch(SQLException e){
             e.getMessage();
@@ -100,7 +101,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
     private void doConnect(){
     try{
         Class.forName("com.mysql.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+        dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
     }catch (SQLException | ClassNotFoundException e){
         e.getMessage();
     }
@@ -176,7 +177,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         });
         jScrollPane1.setViewportView(tableUserControl);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 500, 180));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 460, 500, 180));
 
         jPanel2.setBackground(new java.awt.Color(214, 214, 194));
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
@@ -186,31 +187,31 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("USER NAME:");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 110, 30));
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 110, 30));
 
         jLabel2.setBackground(new java.awt.Color(255, 255, 255));
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("ACCOUNT NAME:");
-        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 110, 30));
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, 30));
 
         txtPassword.setBackground(new java.awt.Color(255, 255, 255));
         txtPassword.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         txtPassword.setForeground(new java.awt.Color(102, 102, 102));
         txtPassword.setOpaque(true);
-        jPanel2.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 160, 240, 30));
+        jPanel2.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 130, 240, 30));
 
         txtAcctName.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jPanel2.add(txtAcctName, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 40, 350, 30));
+        jPanel2.add(txtAcctName, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 10, 350, 30));
 
         txtUserName.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jPanel2.add(txtUserName, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 350, 30));
+        jPanel2.add(txtUserName, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 50, 350, 30));
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("PASSWORD:");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 160, 110, 30));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 110, 30));
 
         jPanel3.setBackground(new java.awt.Color(214, 214, 194));
         jPanel3.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
@@ -326,24 +327,24 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         });
         jPanel3.add(jButton12, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 130, 130, 30));
 
-        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 200, 240, 170));
+        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 170, 240, 170));
 
         jLabel3.setBackground(new java.awt.Color(255, 255, 255));
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("USER NAME:");
-        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 110, 30));
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 110, 30));
 
         cmbPosition.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         cmbPosition.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jPanel2.add(cmbPosition, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 120, 350, 30));
+        jPanel2.add(cmbPosition, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 90, 350, 30));
 
         chkAdmin.setBackground(new java.awt.Color(255, 255, 255));
         chkAdmin.setForeground(new java.awt.Color(0, 0, 0));
         chkAdmin.setText("ADMIN");
-        jPanel2.add(chkAdmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 200, -1, -1));
+        jPanel2.add(chkAdmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, -1, -1));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 500, 380));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 500, 350));
 
         btnAdd.setBackground(new java.awt.Color(255, 255, 255));
         btnAdd.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -357,7 +358,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnAddActionPerformed(evt);
             }
         });
-        jPanel1.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 80, 70));
+        jPanel1.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 80, 70));
 
         btnEdit.setBackground(new java.awt.Color(255, 255, 255));
         btnEdit.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -371,7 +372,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnEditActionPerformed(evt);
             }
         });
-        jPanel1.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 200, 80, 70));
+        jPanel1.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 20, 80, 70));
 
         btnSave.setBackground(new java.awt.Color(255, 255, 255));
         btnSave.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -385,7 +386,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 btnSaveActionPerformed(evt);
             }
         });
-        jPanel1.add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 200, 80, 70));
+        jPanel1.add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 20, 80, 70));
 
         btnDelete.setBackground(new java.awt.Color(255, 255, 255));
         btnDelete.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -394,7 +395,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         btnDelete.setText("DELETE");
         btnDelete.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnDelete.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jPanel1.add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 200, 80, 70));
+        jPanel1.add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 20, 80, 70));
 
         btnCancel.setBackground(new java.awt.Color(255, 255, 255));
         btnCancel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -403,9 +404,9 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         btnCancel.setText("CANCEL");
         btnCancel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnCancel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jPanel1.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 200, 80, 70));
+        jPanel1.add(btnCancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 20, 80, 70));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 530, 660));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 520, 660));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -430,19 +431,19 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             try{
                 String insertSQL = "INSERT INTO tblUserControl (accountName,userName,password,position,isAdmin)"
                         + "values (?,?,?,?,?)";
-                pstmt = conn.prepareStatement(insertSQL);
-                pstmt.setString(1,txtAcctName.getText());
-                pstmt.setString(2, txtUserName.getText());
-                pstmt.setString(3,txtPassword.getText());
-                pstmt.setString(4,cmbPosition.getSelectedItem().toString());
+                dbConn.pstmt = dbConn.conn.prepareStatement(insertSQL);
+                dbConn.pstmt.setString(1,txtAcctName.getText());
+                dbConn.pstmt.setString(2, txtUserName.getText());
+                dbConn.pstmt.setString(3,txtPassword.getText());
+                dbConn.pstmt.setString(4,cmbPosition.getSelectedItem().toString());
                 if (chkAdmin.isSelected()){
-                    pstmt.setString(5,"Y");
+                    dbConn.pstmt.setString(5,"Y");
                 }else{
-                    pstmt.setString(5,"N");
+                    dbConn.pstmt.setString(5,"N");
                 }
-                pstmt.execute();
+                dbConn.pstmt.execute();
                 JOptionPane.showMessageDialog(this, "USER ADDED");
-                pstmt.close();
+                dbConn.pstmt.close();
                 fillTable();
                 saveAuditTrail("ADDED USER: " + txtAcctName.getText());
                 clearTexts();
@@ -455,20 +456,20 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             String editSQL = "UPDATE tblUserControl set accountName=?,userName=?,"
                     + "password=?, position=?,isAdmin=? where accountName=?";
             try{
-                pstmt = conn.prepareStatement(editSQL);
-                pstmt.setString(6, getAccountName);
-                pstmt.setString(1,txtAcctName.getText());
-                pstmt.setString(2, txtUserName.getText());
-                pstmt.setString(3,txtPassword.getText());
-                pstmt.setString(4,cmbPosition.getSelectedItem().toString());
+                dbConn.pstmt = dbConn.conn.prepareStatement(editSQL);
+                dbConn.pstmt.setString(6, getAccountName);
+                dbConn.pstmt.setString(1,txtAcctName.getText());
+                dbConn.pstmt.setString(2, txtUserName.getText());
+                dbConn.pstmt.setString(3,txtPassword.getText());
+                dbConn.pstmt.setString(4,cmbPosition.getSelectedItem().toString());
                 if (chkAdmin.isSelected()){
-                    pstmt.setString(5,"Y");
+                    dbConn.pstmt.setString(5,"Y");
                 }else{
-                    pstmt.setString(5,"N");
+                    dbConn.pstmt.setString(5,"N");
                 }
-                pstmt.executeUpdate();
+                dbConn.pstmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "RECORD UPDATED");
-                pstmt.close();
+                dbConn.pstmt.close();
                 fillTable();
                 saveAuditTrail("EDITED USER: " + txtAcctName.getText());
                 clearTexts();
@@ -486,16 +487,16 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         try{
             String tblClick = (tableUserControl.getModel().getValueAt(ba, 0).toString());
             String tableQuery = "Select * from tblUserControl where accountName=?";
-            pstmt = conn.prepareStatement(tableQuery);
-            pstmt.setString(1,tblClick);
-            rs =pstmt.executeQuery();
-            if (rs.next()){
-                txtAcctName.setText(rs.getString("accountName"));
-                txtPassword.setText(rs.getString("password"));
-                txtUserName.setText(rs.getString("userName"));
+            dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
+            dbConn.pstmt.setString(1,tblClick);
+            dbConn.rs =dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                txtAcctName.setText(dbConn.rs.getString("accountName"));
+                txtPassword.setText(dbConn.rs.getString("password"));
+                txtUserName.setText(dbConn.rs.getString("userName"));
                 getAccountName = txtAcctName.getText();
-                cmbPosition.setSelectedItem(rs.getString("position"));
-                String isAdmin = rs.getString("isAdmin");
+                cmbPosition.setSelectedItem(dbConn.rs.getString("position"));
+                String isAdmin = dbConn.rs.getString("isAdmin");
                 if (isAdmin.equals("Y")){
                     chkAdmin.setSelected(true);
                 }else if(isAdmin.equals("N")){
