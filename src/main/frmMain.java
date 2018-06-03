@@ -88,7 +88,7 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         btnUserControl = new javax.swing.JButton();
         btnLogOut = new javax.swing.JButton();
         btnLogOut1 = new javax.swing.JButton();
-        btnLogOut2 = new javax.swing.JButton();
+        btnUserSecurity = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -102,6 +102,7 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         btnSupplier.setBackground(new java.awt.Color(255, 255, 255));
         btnSupplier.setForeground(new java.awt.Color(0, 0, 0));
+        btnSupplier.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/supplierIcon.png"))); // NOI18N
         btnSupplier.setText("SUPPLIER MASTER");
         btnSupplier.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -185,7 +186,7 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         btnReceipt.setBackground(new java.awt.Color(255, 255, 255));
         btnReceipt.setForeground(new java.awt.Color(0, 0, 0));
         btnReceipt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/ReportsIcon2.png"))); // NOI18N
-        btnReceipt.setText("RECEIPT DATABASE");
+        btnReceipt.setText("RECEIPT RECORDS");
         btnReceipt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReceiptActionPerformed(evt);
@@ -235,14 +236,16 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         });
         jPanel4.add(btnLogOut1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 580, 240, 80));
 
-        btnLogOut2.setBackground(new java.awt.Color(255, 255, 255));
-        btnLogOut2.setForeground(new java.awt.Color(0, 0, 0));
-        btnLogOut2.addActionListener(new java.awt.event.ActionListener() {
+        btnUserSecurity.setBackground(new java.awt.Color(255, 255, 255));
+        btnUserSecurity.setForeground(new java.awt.Color(0, 0, 0));
+        btnUserSecurity.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/securityIcon.png"))); // NOI18N
+        btnUserSecurity.setText("USER SECURITY");
+        btnUserSecurity.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLogOut2ActionPerformed(evt);
+                btnUserSecurityActionPerformed(evt);
             }
         });
-        jPanel4.add(btnLogOut2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 400, 240, 80));
+        jPanel4.add(btnUserSecurity, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 400, 240, 80));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 10, 260, 670));
 
@@ -306,9 +309,10 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         // TODO add your handling code here:
     }//GEN-LAST:event_btnLogOut1ActionPerformed
 
-    private void btnLogOut2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogOut2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnLogOut2ActionPerformed
+    private void btnUserSecurityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserSecurityActionPerformed
+        frmUserSecurity obj = new frmUserSecurity();
+        obj.setVisible(true);
+    }//GEN-LAST:event_btnUserSecurityActionPerformed
 
     private void btnCashiering1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCashiering1ActionPerformed
         // TODO add your handling code here:
@@ -356,13 +360,13 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private javax.swing.JButton btnLPO;
     private javax.swing.JButton btnLogOut;
     private javax.swing.JButton btnLogOut1;
-    private javax.swing.JButton btnLogOut2;
     private javax.swing.JButton btnProduct;
     private javax.swing.JButton btnReceipt;
     private javax.swing.JButton btnReports;
     private javax.swing.JButton btnStockAdjust;
     private javax.swing.JButton btnSupplier;
     private javax.swing.JButton btnUserControl;
+    private javax.swing.JButton btnUserSecurity;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;

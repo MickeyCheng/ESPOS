@@ -41,7 +41,7 @@ dbConnection dbConn = new dbConnection();
                 getMaxAuditID = 1;
             }
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
     private void saveAuditTrail(String getTransaction){
@@ -58,7 +58,7 @@ dbConnection dbConn = new dbConnection();
             dbConn.pstmt.execute();
             dbConn.pstmt.close();
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
     private void fillCombo(){
@@ -95,7 +95,7 @@ dbConnection dbConn = new dbConnection();
             tableUserControl.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             sortTable();
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
     private void doConnect(){
@@ -103,7 +103,7 @@ dbConnection dbConn = new dbConnection();
         Class.forName("com.mysql.jdbc.Driver");
         dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
     }catch (SQLException | ClassNotFoundException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }
 }
     private void sortTable(){
@@ -443,6 +443,7 @@ dbConnection dbConn = new dbConnection();
                 }
                 dbConn.pstmt.execute();
                 JOptionPane.showMessageDialog(this, "USER ADDED");
+                SaveUserSecurity();
                 dbConn.pstmt.close();
                 fillTable();
                 saveAuditTrail("ADDED USER: " + txtAcctName.getText());
@@ -504,10 +505,35 @@ dbConnection dbConn = new dbConnection();
                 }
             }
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }//GEN-LAST:event_tableUserControlMouseClicked
-
+    private void SaveUserSecurity(){
+        try{
+            dbConn.SQLQuery = "Insert into tblusersecurity (us_id,us_name,us_product,us_supplier,us_lpo,us_stockadjust,us_cashier,"
+                    + "us_expense,us_receipt,us_reports,us_usercontrol,us_usersecurity,us_adduser,us_date) "
+                    + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            dbConn.pstmt = dbConn.conn.prepareStatement(dbConn.SQLQuery);
+            dbConn.pstmt.setString(1, txtUserName.getText());
+            dbConn.pstmt.setString(2,txtAcctName.getText());
+            dbConn.pstmt.setString(3,"N");
+            dbConn.pstmt.setString(4,"N");
+            dbConn.pstmt.setString(5,"N");
+            dbConn.pstmt.setString(6,"N");
+            dbConn.pstmt.setString(7,"N");
+            dbConn.pstmt.setString(8,"N");
+            dbConn.pstmt.setString(9,"N");
+            dbConn.pstmt.setString(10,"N");
+            dbConn.pstmt.setString(11,"N");
+            dbConn.pstmt.setString(12,"N");
+            dbConn.pstmt.setString(13,dbConn.LoggedInUser);
+            dbConn.pstmt.setString(14,dbConn.sdfDateGlobal.format(dbConn.todayDateGlobal));
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 txtPassword.setText(txtPassword.getText() +"2");
     }//GEN-LAST:event_jButton1ActionPerformed

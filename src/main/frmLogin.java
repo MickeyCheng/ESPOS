@@ -245,6 +245,7 @@ dbConnection dbConn = new dbConnection();
             showUserName = dbConn.rs.getString("accountName");
             getPosition = dbConn.rs.getString("position");
             checkAdmin = dbConn.rs.getString("isAdmin");
+            dbConn.LoggedInUser = showUserName;
             JOptionPane.showMessageDialog(this, "Welcome " +showUserName +"!");
             saveAuditTrail("LOGGED IN SUCCESSFULLY");
             frmMain obj = new frmMain();

@@ -11,6 +11,8 @@ public class dbConnection {
     PreparedStatement pstmt;
     SimpleDateFormat sdfDateGlobal = new SimpleDateFormat("dd-MM-yyyy");
     java.util.Date todayDateGlobal = new java.util.Date();
+    public static String LoggedInUser;
+    public String SQLQuery;
     public void doConnect(){
         try{
             Class.forName("com.mysql.jdbc.Driver");
