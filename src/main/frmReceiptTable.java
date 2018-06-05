@@ -54,7 +54,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                 getMaxAuditID = 1;
             }
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this,e.getMessage());
         }
     }
     private void saveAuditTrail(String getTransaction){
@@ -71,7 +71,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
             dbConn.pstmt.execute();
             dbConn.pstmt.close();
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this,e.getMessage());
         }
     }
     private void fillTableStock(){
@@ -89,7 +89,7 @@ SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
         tableStock.getColumnModel().getColumn(0).setHeaderValue("ITEM");
         tableStock.getColumnModel().getColumn(1).setHeaderValue("STOCK QTY");        
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this,e.getMessage());
     }
     }
 //private void doConnect(){
@@ -366,7 +366,7 @@ private void fillTable(){
                 lblTotalAmount.setText(String.valueOf(df.format(dbConn.rs.getFloat("totalAmount"))));
             }
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this,e.getMessage());
         }
     }//GEN-LAST:event_tableReceiptMouseClicked
 
@@ -474,7 +474,7 @@ private void fillTable(){
                 getCashSalesRange = "0.000";
             }
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this,e.getMessage());
         }
         
             try{
@@ -490,7 +490,7 @@ private void fillTable(){
                 getCardSalesRange = "0.000";
             }
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this,e.getMessage());
         }
             
             try{
@@ -506,7 +506,7 @@ private void fillTable(){
                 getFocRange = "0.000";
             }
         }catch(SQLException e){
-            e.getMessage();
+            JOptionPane.showMessageDialog(this,e.getMessage());
         }
     }
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
