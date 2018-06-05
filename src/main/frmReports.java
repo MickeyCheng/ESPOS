@@ -71,7 +71,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void getNextAuditID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblaudittrail order by at_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxAuditID = dbConn.rs.getInt(1);
@@ -86,7 +86,7 @@ dbConnection dbConn = new dbConnection();
     private void saveAuditTrail(String getTransaction){
         getNextAuditID();
         try{
-            String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
+            String saveAuditQuery = "INSERT into tblaudittrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
             dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
             dbConn.pstmt.setInt(1, getMaxAuditID);
@@ -109,7 +109,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void fillAuditTrail(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblAuditTrail order by at_dateandTime DESC");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblaudittrail order by at_dateandTime DESC");
             dbConn.rs = dbConn.pstmt.executeQuery();
             tblAuditTrail.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             dbConn.pstmt.close();
@@ -136,7 +136,7 @@ dbConnection dbConn = new dbConnection();
     private void fillTablepanReceipt(){
     try{
         dbConn.pstmt = dbConn.conn.prepareStatement("Select transactionId, productName,quantity,paymentMethod,date,time "
-                + "from tblReceipt order by transactionId DESC");
+                + "from tblreceipt order by transactionId DESC");
         dbConn.rs = dbConn.pstmt.executeQuery();
         tableReceipt.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
         tableReceipt.getColumnModel().getColumn(0).setHeaderValue("ID");
@@ -167,7 +167,7 @@ dbConnection dbConn = new dbConnection();
     private void fillTableProduct(){
      try{
             dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,"
-                    + "stockOnHand,supplier,supplierPrice from tblProduct order by productName");
+                    + "stockOnHand,supplier,supplierPrice from tblproduct order by productName");
             dbConn.rs = dbConn.pstmt.executeQuery();
             tblProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             tblProduct.getColumnModel().getColumn(0).setHeaderValue("SKU");
@@ -183,7 +183,7 @@ dbConnection dbConn = new dbConnection();
     private void listenComboSupplier(){
         try{
             dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,"
-                    + "stockOnHand,supplier,supplierPrice from tblProduct where supplier = ?");
+                    + "stockOnHand,supplier,supplierPrice from tblproduct where supplier = ?");
             dbConn.pstmt.setString(1,cmbSupplier.getSelectedItem().toString());
             dbConn.rs = dbConn.pstmt.executeQuery();
             tblProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
@@ -200,7 +200,7 @@ dbConnection dbConn = new dbConnection();
     private void listenToTextItem(){
         try{
             dbConn.pstmt = dbConn.conn.prepareStatement("SELECT productId,productName,"
-                    + "stockOnHand,supplier,supplierPrice from tblProduct where productName like ?");
+                    + "stockOnHand,supplier,supplierPrice from tblproduct where productName like ?");
             dbConn.pstmt.setString(1, "%"+ txtProductName.getText() + "%");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
@@ -214,7 +214,7 @@ dbConnection dbConn = new dbConnection();
     private void fillComboSupplier(){
         cmbSupplier.removeAllItems();
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("select sm_name from tblSupplierMaster order by sm_name");
+            dbConn.pstmt = dbConn.conn.prepareStatement("select sm_name from tblsuppliermaster order by sm_name");
             dbConn.rs = dbConn.pstmt.executeQuery();
             while (dbConn.rs.next()){
                 cmbSupplier.addItem(dbConn.rs.getString("sm_name"));
@@ -1327,7 +1327,7 @@ dbConnection dbConn = new dbConnection();
         int row = tableReceipt.getSelectedRow();
         int ba = tableReceipt.convertRowIndexToModel(row);
         getTransactionId = (tableReceipt.getModel().getValueAt(ba, 0)).toString();
-        String tableQuery = "SELECT * from tblReceipt where transactionId=?";
+        String tableQuery = "SELECT * from tblreceipt where transactionId=?";
 
         try{
             dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
@@ -1363,7 +1363,7 @@ dbConnection dbConn = new dbConnection();
     }//GEN-LAST:event_jButton2ActionPerformed
     private void displayDailySales(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblreceipt where date=? and paymentMethod=?");
             dbConn.pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
             dbConn.pstmt.setString(2,"CASH");
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1377,7 +1377,7 @@ dbConnection dbConn = new dbConnection();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblreceipt where date=? and paymentMethod=?");
             dbConn.pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
             dbConn.pstmt.setString(2,"CARD");
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1391,7 +1391,7 @@ dbConnection dbConn = new dbConnection();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblreceipt where date=? and paymentMethod=?");
             dbConn.pstmt.setString(1, String.valueOf(tdf.format(datePicker.getDate())));
             dbConn.pstmt.setString(2,"FOC");
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1407,7 +1407,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void displaySalesRange(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblreceipt where "
                     + "date between ? and ? and paymentMethod=?");
             dbConn.pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
             dbConn.pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
@@ -1423,7 +1423,7 @@ dbConnection dbConn = new dbConnection();
         }
         
             try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblreceipt where "
                     + "date between ? and ? and paymentMethod=?");
             dbConn.pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
             dbConn.pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
@@ -1439,7 +1439,7 @@ dbConnection dbConn = new dbConnection();
         }
             
             try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblReceipt where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(bdPrice) from tblreceipt where "
                     + "date between ? and ? and paymentMethod=?");
             dbConn.pstmt.setString(1, String.valueOf(tdf.format(dateFrom.getDate())));
             dbConn.pstmt.setString(2, String.valueOf(tdf.format(dateTo.getDate())));
@@ -1501,7 +1501,7 @@ dbConnection dbConn = new dbConnection();
 
     private void btnShowAllExpenseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowAllExpenseActionPerformed
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblExpense order by ex_date DESC");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblexpense  order by ex_date DESC");
             dbConn.rs = dbConn.pstmt.executeQuery();
             tblExpense.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             dbConn.pstmt.close();
@@ -1520,7 +1520,7 @@ dbConnection dbConn = new dbConnection();
         Date getFromExpense = dateFromExpense.getDate();
         Date getToExpense = dateToExpense.getDate();
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblExpense where ex_date between ? and ? order by ex_date DESC");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblexpense where ex_date between ? and ? order by ex_date DESC");
             dbConn.pstmt.setString(1, String.valueOf(sdfDate.format(getFromExpense)));
             dbConn.pstmt.setString(2, String.valueOf(sdfDate.format(getToExpense)));
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1531,7 +1531,7 @@ dbConnection dbConn = new dbConnection();
             e.getMessage();
         }
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(ex_amount) from tblExpense where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT sum(ex_amount) from tblexpense where "
                     + "ex_date between ? and ?");
             dbConn.pstmt.setString(1, String.valueOf(sdfDate.format(getFromExpense)));
             dbConn.pstmt.setString(2, String.valueOf(sdfDate.format(getToExpense)));
@@ -1551,7 +1551,7 @@ dbConnection dbConn = new dbConnection();
         saveAuditTrail("VIEWED INCOME FROM " + String.valueOf(tdf.format(dateFromIncome.getDate())) 
                 + " TO" + String.valueOf(tdf.format(dateToIncome.getDate())));
         try{    
-            String getSalesQuery = "Select sum(bdPrice) from tblReceipt where "
+            String getSalesQuery = "Select sum(bdPrice) from tblreceipt where "
                     + "paymentMethod<>? and date between ? and ?";
             dbConn.pstmt = dbConn.conn.prepareStatement(getSalesQuery);
             dbConn.pstmt.setString(1,"FOC");
@@ -1564,7 +1564,7 @@ dbConnection dbConn = new dbConnection();
             dbConn.pstmt.close();
                 try{
                     dbConn.pstmt = dbConn.conn.prepareStatement("select transactionId,productName,bdPrice,date,paymentMethod "
-                            + "from tblReceipt where date between ? and ? order by date DESC");
+                            + "from tblreceipt where date between ? and ? order by date DESC");
                     dbConn.pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
                     dbConn.pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
                     dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1580,7 +1580,7 @@ dbConnection dbConn = new dbConnection();
         
         //getFOC
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where "
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblreceipt where "
                     + "paymentMethod=? and date between ? and ?");
             dbConn.pstmt.setString(1,"FOC");
             dbConn.pstmt.setString(2, String.valueOf(tdf.format(getFromIncome)));
@@ -1597,7 +1597,7 @@ dbConnection dbConn = new dbConnection();
         
         //getExpense
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(ex_amount) from tblExpense where ex_date between ? and ?");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(ex_amount) from tblexpense where ex_date between ? and ?");
             dbConn.pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
             dbConn.pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1606,7 +1606,7 @@ dbConnection dbConn = new dbConnection();
             }
             dbConn.pstmt.close();
                 try{
-                    dbConn.pstmt = dbConn.conn.prepareStatement("select * from tblExpense where ex_date between ? and ? "
+                    dbConn.pstmt = dbConn.conn.prepareStatement("select * from tblexpense where ex_date between ? and ? "
                             + "order by ex_date DESC");
                     dbConn.pstmt.setString(1, String.valueOf(tdf.format(getFromIncome)));
                     dbConn.pstmt.setString(2, String.valueOf(tdf.format(getToIncome)));
@@ -1640,7 +1640,7 @@ dbConnection dbConn = new dbConnection();
         Date getDateToLPO = dateToLPO.getDate();
         try{
             dbConn.pstmt = dbConn.conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount, po_lpoDate from "
-                + "tblPurchaseOrder where po_lpoDate between ? and ?");
+                + "tblpurchaseorder where po_lpoDate between ? and ?");
             dbConn.pstmt.setString(1,String.valueOf(sdfDate.format(getDateFromLPO)));
             dbConn.pstmt.setString(2,String.valueOf(sdfDate.format(getDateToLPO)));
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1653,7 +1653,7 @@ dbConnection dbConn = new dbConnection();
     }//GEN-LAST:event_jButton6ActionPerformed
     private void fillLPOPayment(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount,po_lpoDate from tblPurchaseOrder"
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT po_Id,po_supplier,po_qtyReceived,po_payableAmount,po_lpoDate from tblpurchaseorder"
                     + " order by po_lpoDate");
             dbConn.rs = dbConn.pstmt.executeQuery();
             tblLPOPayment.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
@@ -1675,7 +1675,7 @@ dbConnection dbConn = new dbConnection();
         int row = tblLPOPayment.getSelectedRow();
         int ba = tblLPOPayment.convertRowIndexToModel(row);
         String tblClick = tblLPOPayment.getModel().getValueAt(ba, 0).toString();
-        String fetchData = "SELECT * from tblPurchaseOrder where po_Id=?";
+        String fetchData = "SELECT * from tblpurchaseorder where po_Id=?";
         try{
             dbConn.pstmt  = dbConn.conn.prepareStatement(fetchData);
             dbConn.pstmt.setInt(1, Integer.valueOf(tblClick));
@@ -1693,7 +1693,7 @@ dbConnection dbConn = new dbConnection();
         }
         
         try{
-            String fetchDataSum = "SELECT sum(po_payableAmount) from tblPurchaseOrder where po_Id=?";
+            String fetchDataSum = "SELECT sum(po_payableAmount) from tblpurchaseorder where po_Id=?";
             dbConn.pstmt = dbConn.conn.prepareStatement(fetchDataSum);
             dbConn.pstmt.setInt(1, Integer.valueOf(tblClick));
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1713,7 +1713,7 @@ dbConnection dbConn = new dbConnection();
     }//GEN-LAST:event_tblLPOPaymentMouseEntered
     private void getNextExpense(){
             try{
-                dbConn.pstmt  = dbConn.conn.prepareStatement("SELECT ex_id from tblExpense order by ex_id DESC LIMIT 1");
+                dbConn.pstmt  = dbConn.conn.prepareStatement("SELECT ex_id from tblexpense order by ex_id DESC LIMIT 1");
                 dbConn.rs = dbConn.pstmt.executeQuery();
                 if(dbConn.rs.next()){
                     getMaxExpenseID = dbConn.rs.getInt(1);
@@ -1730,7 +1730,7 @@ dbConnection dbConn = new dbConnection();
             JOptionPane.showMessageDialog(this, "LPO IS PAID ALREADY","LPO PAID",JOptionPane.WARNING_MESSAGE);
         }else{
             try{
-                dbConn.pstmt = dbConn.conn.prepareStatement("update tblPurchaseOrder set po_status=?, po_paidAmount=? where po_Id=?");
+                dbConn.pstmt = dbConn.conn.prepareStatement("update tblpurchaseorder set po_status=?, po_paidAmount=? where po_Id=?");
                 dbConn.pstmt.setString(1,"PAID");
                 dbConn.pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
                 dbConn.pstmt.setInt(3,Integer.valueOf(lblLPONumber.getText()));
@@ -1745,7 +1745,7 @@ dbConnection dbConn = new dbConnection();
             //add to expense
             try{
                 getNextExpense();
-                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblExpense(ex_id,ex_amount,ex_comment,ex_date)"
+                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblexpense(ex_id,ex_amount,ex_comment,ex_date)"
                     + "values(?,?,?,?)");
                 dbConn.pstmt.setInt(1, getMaxExpenseID);
                 dbConn.pstmt.setDouble(2,Double.valueOf(txtAmountPaid.getText()));
@@ -1851,7 +1851,7 @@ dbConnection dbConn = new dbConnection();
         Date getDateFromAudit = dateFromAudit.getDate();
         Date getDateToAudit = dateToAudit.getDate();
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblAuditTrail where at_dateAndTime between"
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblaudittrail where at_dateAndTime between"
                     + " ? and ? order by at_dateandTime DESC");
             dbConn.pstmt.setString(1,String.valueOf(sdfAudit.format(getDateFromAudit)));
             dbConn.pstmt.setString(2,String.valueOf(sdfAudit.format(getDateToAudit)));

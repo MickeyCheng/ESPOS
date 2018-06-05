@@ -3,16 +3,73 @@ package main;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 public class frmMain extends javax.swing.JFrame {
-
-Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+dbConnection dbConn = new dbConnection();
+//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public frmMain() {
         initComponents();
-        setBounds(0,0,screenSize.width, screenSize.height);
+        dbConn.doConnect();
+        //setBounds(0,0,screenSize.width, screenSize.height);
         setVisible(true);
-        disableAll();
-        limitAccess();
+//        disableAll();
+        GetAccess();
+//        limitAccess();
+        setLocationRelativeTo(null);
+        setResizable(false);
+    }
+    private void GetAccess(){
+        try{
+            dbConn.SQLQuery = "select * from tblusersecurity where us_name=?";
+            dbConn.pstmt = dbConn.conn.prepareStatement(dbConn.SQLQuery);
+            dbConn.pstmt.setString(1, dbConn.LoggedInUser);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if(dbConn.rs.next()){
+                if (dbConn.rs.getString("us_product").equals("N")){
+                    btnProduct.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_supplier").equals("N")){
+                    btnSupplier.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_lpo").equals("N")){
+                    btnLPO.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_stockadjust").equals("N")){
+                    btnStockAdjust.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_cashier").equals("N")){
+                    btnCashiering.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_receipt").equals("N")){
+                    btnReceipt.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_product").equals("N")){
+                    btnProduct.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_reports").equals("N")){
+                    btnReports.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_usercontrol").equals("N")){
+                    btnUserControl.setEnabled(false);
+                }
+
+                if (dbConn.rs.getString("us_usersecurity").equals("N")){
+                    btnUserSecurity.setEnabled(false);
+                }
+            }
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
     }
     private void disableAll(){
         btnCashiering.setEnabled(false);
@@ -43,25 +100,25 @@ Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         btnUserControl.setEnabled(true);
     }
     private void limitAccess(){
-        if (frmLogin.checkAdmin.equals("Y")){
-            enableAll();
-        }else if (frmLogin.getPosition.equalsIgnoreCase("CASHIER")){
-            btnCashiering.setEnabled(true);
-            btnLogOut.setEnabled(true);
-            btnReceipt.setEnabled(true);
-            btnProduct.setEnabled(true);
-        }else if(frmLogin.getPosition.equalsIgnoreCase("STORE KEEPER")){
-            btnProduct.setEnabled(true);
-            btnLPO.setEnabled(true);
-            btnLogOut.setEnabled(true);
-            btnStockAdjust.setEnabled(true);
-            btnSupplier.setEnabled(true);
-        }else if(frmLogin.getPosition.equalsIgnoreCase("FINANCE")){
-            btnExpenses.setEnabled(true);
-            btnLogOut.setEnabled(true);
-            btnReceipt.setEnabled(true);
-            btnReports.setEnabled(true);
-        }
+//        if (frmLogin.checkAdmin.equals("Y")){
+//            enableAll();
+//        }else if (frmLogin.getPosition.equalsIgnoreCase("CASHIER")){
+//            btnCashiering.setEnabled(true);
+//            btnLogOut.setEnabled(true);
+//            btnReceipt.setEnabled(true);
+//            btnProduct.setEnabled(true);
+//        }else if(frmLogin.getPosition.equalsIgnoreCase("STORE KEEPER")){
+//            btnProduct.setEnabled(true);
+//            btnLPO.setEnabled(true);
+//            btnLogOut.setEnabled(true);
+//            btnStockAdjust.setEnabled(true);
+//            btnSupplier.setEnabled(true);
+//        }else if(frmLogin.getPosition.equalsIgnoreCase("FINANCE")){
+//            btnExpenses.setEnabled(true);
+//            btnLogOut.setEnabled(true);
+//            btnReceipt.setEnabled(true);
+//            btnReports.setEnabled(true);
+//        }
     }
 
     /**

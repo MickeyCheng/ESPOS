@@ -237,7 +237,7 @@ dbConnection dbConn = new dbConnection();
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
     try{
-        String checkLoginSQL = "Select * from tblUserControl where password=?";
+        String checkLoginSQL = "Select * from tblusercontrol where password=?";
         dbConn.pstmt = dbConn.conn.prepareStatement(checkLoginSQL);
         dbConn.pstmt.setString(1, String.valueOf(txtPassword.getPassword()));
         dbConn.rs = dbConn.pstmt.executeQuery();
@@ -256,7 +256,7 @@ dbConnection dbConn = new dbConnection();
             saveAuditTrail("LOGGED IN FAILED");
         }
     }catch(SQLException e){
-        e.getMessage();
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }
     }//GEN-LAST:event_btnLoginActionPerformed
 

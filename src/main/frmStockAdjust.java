@@ -46,7 +46,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void getNextAuditID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblaudittrail order by at_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxAuditID = dbConn.rs.getInt(1);
@@ -61,7 +61,7 @@ dbConnection dbConn = new dbConnection();
     private void saveAuditTrail(String getTransaction){
         getNextAuditID();
         try{
-            String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
+            String saveAuditQuery = "INSERT into tblaudittrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
             dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
             dbConn.pstmt.setInt(1, getMaxAuditID);
@@ -77,7 +77,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void listenSearch(){
         try{
-            String searchSQL = "Select * from tblProduct where productId like? OR productName like?";
+            String searchSQL = "Select * from tblproduct where productId like? OR productName like?";
             dbConn.pstmt = dbConn.conn.prepareStatement(searchSQL);
             dbConn.pstmt.setString(1, "%"+txtSearch.getText()+"%");
             dbConn.pstmt.setString(2, "%"+txtSearch.getText()+"%");
@@ -91,7 +91,7 @@ dbConnection dbConn = new dbConnection();
        }
     private void fillTable(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct order by category");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct order by category");
             dbConn.rs = dbConn.pstmt.executeQuery();
             tableProduct.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             sortTable();
@@ -334,7 +334,7 @@ try{
         int row = tableProduct.getSelectedRow();
         int ba = tableProduct.convertRowIndexToModel(row);
         String tblClick = (tableProduct.getModel().getValueAt(ba, 0).toString());
-        String selectedItem = "Select * from tblProduct where productId =?";
+        String selectedItem = "Select * from tblproduct where productId =?";
         try{
             dbConn.pstmt = dbConn.conn.prepareStatement(selectedItem);
             dbConn.pstmt.setString(1, tblClick);
@@ -356,12 +356,12 @@ try{
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try{
             if (lblStock.getText().equals("0")){
-                String adjustSQL = "UPDATE tblProduct set stockOnhand=? where productId=?";
+                String adjustSQL = "UPDATE tblproduct set stockOnhand=? where productId=?";
                 dbConn.pstmt = dbConn.conn.prepareStatement(adjustSQL);
                 dbConn.pstmt.setString(1,cmbAdjust.getSelectedItem().toString());
                 dbConn.pstmt.setString(2, getProdId);
             }else{
-                String adjustSQL = "UPDATE tblProduct set stockOnhand=stockOnHand+? where productId=?";
+                String adjustSQL = "UPDATE tblproduct set stockOnhand=stockOnHand+? where productId=?";
                 dbConn.pstmt = dbConn.conn.prepareStatement(adjustSQL);
                 dbConn.pstmt.setString(1,cmbAdjust.getSelectedItem().toString());
                 dbConn.pstmt.setString(2, getProdId);
@@ -386,7 +386,7 @@ try{
                 if (Integer.valueOf(lblStock.getText()) < Integer.valueOf(setStock)){
                     JOptionPane.showMessageDialog(this, "WILL RESULT TO NEGATIVE QTY","NEGATIVE",JOptionPane.ERROR_MESSAGE);
                 }else{
-                String adjustSQL = "UPDATE tblProduct set stockOnhand=stockOnHand-? where productId=?";
+                String adjustSQL = "UPDATE tblproduct set stockOnhand=stockOnHand-? where productId=?";
                     dbConn.pstmt = dbConn.conn.prepareStatement(adjustSQL);
                     dbConn.pstmt.setString(1,setStock);
                     dbConn.pstmt.setString(2, getProdId);

@@ -32,7 +32,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void getNextAuditID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblaudittrail order by at_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxAuditID = dbConn.rs.getInt(1);
@@ -47,7 +47,7 @@ dbConnection dbConn = new dbConnection();
     private void saveAuditTrail(String getTransaction){
         getNextAuditID();
         try{
-            String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
+            String saveAuditQuery = "INSERT into tblaudittrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
             dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
             dbConn.pstmt.setInt(1, getMaxAuditID);
@@ -429,7 +429,7 @@ dbConnection dbConn = new dbConnection();
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         if (add == true && edit == false){
             try{
-                String insertSQL = "INSERT INTO tblUserControl (accountName,userName,password,position,isAdmin)"
+                String insertSQL = "INSERT INTO tblusercontrol (accountName,userName,password,position,isAdmin)"
                         + "values (?,?,?,?,?)";
                 dbConn.pstmt = dbConn.conn.prepareStatement(insertSQL);
                 dbConn.pstmt.setString(1,txtAcctName.getText());
@@ -454,7 +454,7 @@ dbConnection dbConn = new dbConnection();
                 JOptionPane.showMessageDialog(this, "PLEASE USE ANOTHER PASSWORD","DUPLICATE",JOptionPane.ERROR_MESSAGE);
             }
         }else if(add ==false && edit == true){
-            String editSQL = "UPDATE tblUserControl set accountName=?,userName=?,"
+            String editSQL = "UPDATE tblusercontrol set accountName=?,userName=?,"
                     + "password=?, position=?,isAdmin=? where accountName=?";
             try{
                 dbConn.pstmt = dbConn.conn.prepareStatement(editSQL);
@@ -487,7 +487,7 @@ dbConnection dbConn = new dbConnection();
         int ba = tableUserControl.convertRowIndexToModel(row);
         try{
             String tblClick = (tableUserControl.getModel().getValueAt(ba, 0).toString());
-            String tableQuery = "Select * from tblUserControl where accountName=?";
+            String tableQuery = "Select * from tblusercontrol where accountName=?";
             dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
             dbConn.pstmt.setString(1,tblClick);
             dbConn.rs =dbConn.pstmt.executeQuery();

@@ -29,7 +29,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void getNextAuditID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblaudittrail order by at_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxAuditID = dbConn.rs.getInt(1);
@@ -44,7 +44,7 @@ dbConnection dbConn = new dbConnection();
     private void saveAuditTrail(String getTransaction){
         getNextAuditID();
         try{
-            String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
+            String saveAuditQuery = "INSERT into tblaudittrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
             dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
             dbConn.pstmt.setInt(1, getMaxAuditID);
@@ -60,7 +60,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void fillTable(){
         try{
-            String fillUserTable = "Select * from tblProductCategory";
+            String fillUserTable = "Select * from tblproductcategory";
             dbConn.pstmt = dbConn.conn.prepareStatement(fillUserTable);
             dbConn.rs = dbConn.pstmt.executeQuery();
             tblProductControl.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
@@ -216,7 +216,7 @@ dbConnection dbConn = new dbConnection();
     }//GEN-LAST:event_btnEditActionPerformed
     private void getNextID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT pc_id from tblProductCategory order by pc_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT pc_id from tblproductcategory order by pc_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxID = dbConn.rs.getInt("pc_id");
@@ -233,7 +233,7 @@ dbConnection dbConn = new dbConnection();
         getNextID();
         if (add == true && edit == false){
             try{
-                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblProductCategory (pc_id, pc_name) values (?,?)");
+                dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblproductcategory (pc_id, pc_name) values (?,?)");
                 dbConn.pstmt.setInt(1, getMaxID);
                 dbConn.pstmt.setString(2, txtCategory.getText());
                 dbConn.pstmt.execute();
@@ -250,7 +250,7 @@ dbConnection dbConn = new dbConnection();
         }else if(add ==false && edit == true){
             
             try{
-                dbConn.pstmt = dbConn.conn.prepareStatement("UPDATE tblProductCategory set pc_name=? where pc_id=?");
+                dbConn.pstmt = dbConn.conn.prepareStatement("UPDATE tblproductcategory set pc_name=? where pc_id=?");
                 dbConn.pstmt.setString(1, txtCategory.getText());
                 dbConn.pstmt.setInt(2, Integer.valueOf(tblClick));
                 dbConn.pstmt.executeUpdate();
@@ -270,7 +270,7 @@ dbConnection dbConn = new dbConnection();
         int ba = tblProductControl.convertRowIndexToModel(row);
         try{
             tblClick = (tblProductControl.getModel().getValueAt(ba, 0).toString());
-            String tableQuery = "Select * from tblProductCategory where pc_id=?";
+            String tableQuery = "Select * from tblproductcategory where pc_id=?";
             dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
             dbConn.pstmt.setString(1,tblClick);
             dbConn.rs =dbConn.pstmt.executeQuery();

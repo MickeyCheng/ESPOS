@@ -40,7 +40,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void getNextAuditID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblaudittrail order by at_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxAuditID = dbConn.rs.getInt(1);
@@ -55,7 +55,7 @@ dbConnection dbConn = new dbConnection();
     private void saveAuditTrail(String getTransaction){
         getNextAuditID();
         try{
-            String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
+            String saveAuditQuery = "INSERT into tblaudittrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
             dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
             dbConn.pstmt.setInt(1, getMaxAuditID);
@@ -71,7 +71,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void getNextID(){
         try{
-            dbConn.pstmt =dbConn.conn.prepareStatement("SELECT sm_id from tblSupplierMaster order by sm_id DESC LIMIT 1");
+            dbConn.pstmt =dbConn.conn.prepareStatement("SELECT sm_id from tblsuppliermaster order by sm_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxID = dbConn.rs.getInt("sm_id");
@@ -86,7 +86,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void fillTable(){
         try{
-            String fillTable = "Select sm_id,sm_name,sm_contactnumber from tblSupplierMaster order by sm_name";
+            String fillTable = "Select sm_id,sm_name,sm_contactnumber from tblsuppliermaster order by sm_name";
             dbConn.pstmt = dbConn.conn.prepareStatement(fillTable);
             dbConn.rs = dbConn.pstmt.executeQuery();
             tblSupplierMaster.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
@@ -388,7 +388,7 @@ dbConnection dbConn = new dbConnection();
         getNextID();
         if (add == true && edit ==false){
             try{
-                String insertTblProduct = "INSERT INTO tblSupplierMaster (sm_id,sm_name,sm_address,sm_contactnumber,sm_email,sm_poc) "
+                String insertTblProduct = "INSERT INTO tblsuppliermaster (sm_id,sm_name,sm_address,sm_contactnumber,sm_email,sm_poc) "
                         + "values (?,?,?,?,?,?)";
                 dbConn.pstmt = dbConn.conn.prepareStatement(insertTblProduct);
                 dbConn.pstmt.setInt(1,getMaxID);
@@ -409,7 +409,7 @@ dbConnection dbConn = new dbConnection();
             }
         }else if (add == false && edit == true){
             try{
-                String UpdateTblSupplier = "UPDATE tblSupplierMaster set sm_name=?,sm_address=?"
+                String UpdateTblSupplier = "UPDATE tblsuppliermaster set sm_name=?,sm_address=?"
                         + ",cm_contactnumber=?=?,sm_email=?,sm_poc=? where sm_id=?";
                 dbConn.pstmt = dbConn.conn.prepareStatement(UpdateTblSupplier);
                 dbConn.pstmt.setString(1,txtSupplierName.getText());
@@ -437,7 +437,7 @@ dbConnection dbConn = new dbConnection();
         int ba = tblSupplierMaster.convertRowIndexToModel(row);
         try{
             String tblClick = (tblSupplierMaster.getModel().getValueAt(ba, 0).toString());
-            String tableQuery = "Select * from tblSupplierMaster where sm_id=?";
+            String tableQuery = "Select * from tblsuppliermaster where sm_id=?";
             dbConn.pstmt = dbConn.conn.prepareStatement(tableQuery);
             dbConn.pstmt.setString(1, tblClick);
             dbConn.rs = dbConn.pstmt.executeQuery();

@@ -34,7 +34,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void getNextAuditID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblaudittrail order by at_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxAuditID = dbConn.rs.getInt(1);
@@ -49,7 +49,7 @@ dbConnection dbConn = new dbConnection();
     private void saveAuditTrail(String getTransaction){
         getNextAuditID();
         try{
-            String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
+            String saveAuditQuery = "INSERT into tblaudittrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
             dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
             dbConn.pstmt.setInt(1, getMaxAuditID);
@@ -65,7 +65,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void fillTable(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblExpense order by ex_date DESC");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblexpense order by ex_date DESC");
             dbConn.rs = dbConn.pstmt.executeQuery();
             tblExpense.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
             dbConn.pstmt.close();
@@ -221,7 +221,7 @@ dbConnection dbConn = new dbConnection();
     }//GEN-LAST:event_tblExpenseMouseClicked
     private void getNextExpenseID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT ex_id from tblExpense order by ex_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT ex_id from tblexpense order by ex_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxExpenseID = dbConn.rs.getInt(1);
@@ -237,7 +237,7 @@ dbConnection dbConn = new dbConnection();
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         getNextExpenseID();
         try{
-             dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblExpense(ex_id,ex_amount,ex_comment,ex_date)"
+             dbConn.pstmt = dbConn.conn.prepareStatement("INSERT INTO tblexpense(ex_id,ex_amount,ex_comment,ex_date)"
                     + "values(?,?,?,?)");
              dbConn.pstmt.setInt(1, getMaxExpenseID);
              dbConn.pstmt.setDouble(2,Double.valueOf(txtAmount.getText()));

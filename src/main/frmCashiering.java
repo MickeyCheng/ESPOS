@@ -75,7 +75,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void getNextAuditID(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblAuditTrail order by at_id DESC LIMIT 1");
+            dbConn.pstmt = dbConn.conn.prepareStatement("SELECT * from tblaudittrail order by at_id DESC LIMIT 1");
             dbConn.rs = dbConn.pstmt.executeQuery();
             if (dbConn.rs.next()){
                 getMaxAuditID = dbConn.rs.getInt(1);
@@ -90,7 +90,7 @@ dbConnection dbConn = new dbConnection();
     private void saveAuditTrail(String getTransaction){
         getNextAuditID();
         try{
-            String saveAuditQuery = "INSERT into tblAuditTrail (at_id,at_transaction,at_dateandTime,at_user)"
+            String saveAuditQuery = "INSERT into tblaudittrail (at_id,at_transaction,at_dateandTime,at_user)"
                     + "values(?,?,?,?)";
             dbConn.pstmt = dbConn.conn.prepareStatement(saveAuditQuery);
             dbConn.pstmt.setInt(1, getMaxAuditID);
@@ -106,7 +106,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void fillFavorites(){
         try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "1");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -117,7 +117,7 @@ dbConnection dbConn = new dbConnection();
         JOptionPane.showMessageDialog(this, e.getMessage());
     }
     try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "2");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -127,7 +127,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "3");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -137,7 +137,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "4");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -147,7 +147,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "5");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -157,7 +157,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "6");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -167,7 +167,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "7");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -177,7 +177,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "8");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -187,7 +187,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "9");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -197,7 +197,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "10");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -207,7 +207,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "11");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -217,7 +217,7 @@ dbConnection dbConn = new dbConnection();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }try{
-        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblProduct where favorite=?");
+        dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblproduct where favorite=?");
         dbConn.pstmt.setString(1, "12");
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -228,7 +228,7 @@ dbConnection dbConn = new dbConnection();
         JOptionPane.showMessageDialog(this, e.getMessage());
     }
 //    try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "1");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -239,7 +239,7 @@ dbConnection dbConn = new dbConnection();
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }
 //    try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "2");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -249,7 +249,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "3");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -259,7 +259,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "4");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -269,7 +269,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "5");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -279,7 +279,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "6");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -289,7 +289,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "7");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -299,7 +299,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "8");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -309,7 +309,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "9");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -319,7 +319,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "10");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -329,7 +329,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "11");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -339,7 +339,7 @@ dbConnection dbConn = new dbConnection();
 //    }catch(SQLException e){
 //        JOptionPane.showMessageDialog(this, e.getMessage());
 //    }try{
-//        pstmt = conn.prepareStatement("Select * from tblProduct where favorite=?");
+//        pstmt = conn.prepareStatement("Select * from tblproduct where favorite=?");
 //        pstmt.setString(1, "12");
 //        rs = pstmt.executeQuery();
 //        if (rs.next()){
@@ -360,7 +360,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void listenSearch(){
      try{
-         String searchSQL = "Select * from tblProduct where productId like ? OR productName like?";
+         String searchSQL = "Select * from tblproduct where productid like ? OR productname like?";
          dbConn.pstmt = dbConn.conn.prepareStatement(searchSQL);
          dbConn.pstmt.setString(1, "%"+txtSearch.getText()+"%");
          dbConn.pstmt.setString(2, "%"+txtSearch.getText()+"%");
@@ -1287,7 +1287,7 @@ private void clearTexts(){
 }private void saveReceipt(){
    if (getPaymentMethod.equals("CASH")){
     try{
-        String saveReceiptSQL = "INSERT INTO tblReceipt"
+        String saveReceiptSQL = "INSERT INTO tblreceipt"
                 + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,amountPaid,amountChange,cashier,date,time,paymentMethod)"
                 + "values(?,?,?,?,?,?,?,?,?,?,?,?)";
         for(int i=0; i<tableInvoice.getRowCount();i++){
@@ -1313,7 +1313,7 @@ private void clearTexts(){
     }
    }else if(getPaymentMethod.equals("CARD")){
     try{
-        String saveReceiptSQL = "INSERT INTO tblReceipt"
+        String saveReceiptSQL = "INSERT INTO tblreceipt"
                 + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,"
                 + "amountPaid,amountChange,cashier,date,time,paymentMethod,cardNumber,"
                 + "cardReference)"
@@ -1343,7 +1343,7 @@ private void clearTexts(){
     }
    }else if(getPaymentMethod.equals("FOC")){
     try{
-        String saveReceiptSQL = "INSERT INTO tblReceipt"
+        String saveReceiptSQL = "INSERT INTO tblreceipt"
                 + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,"
                 + "amountPaid,amountChange,cashier,date,time,paymentMethod,focComment)"
                 + "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -1372,7 +1372,7 @@ private void clearTexts(){
    }
     //UPDATE STOCK QTY
     try{
-        String deductStockOnHand = "UPDATE tblProduct set stockOnhand=stockOnhand-? where productId=?";
+        String deductStockOnHand = "UPDATE tblproduct set stockOnhand=stockOnhand-? where productId=?";
         dbConn.pstmt = dbConn.conn.prepareStatement(deductStockOnHand);
         DefaultTableModel model = (DefaultTableModel)tableInvoice.getModel();
         for(int j=0; j<model.getRowCount();j++){
@@ -1387,7 +1387,7 @@ private void clearTexts(){
 }
 private void checkTransactionId(){
     try{
-        String checkReceiptId = "SELECT * from tblReceipt order by transactionId DESC LIMIT 1";
+        String checkReceiptId = "SELECT * from tblreceipt order by transactionId DESC LIMIT 1";
         dbConn.pstmt =dbConn.conn.prepareStatement(checkReceiptId);
         dbConn.rs = dbConn.pstmt.executeQuery();
         if (dbConn.rs.next()){
@@ -1494,7 +1494,7 @@ private void checkTransactionId(){
     }//GEN-LAST:event_bd50ActionPerformed
 private void displayDailySales(){
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblreceipt where date=? and paymentMethod=?");
             dbConn.pstmt.setString(1, lblDate.getText());
             dbConn.pstmt.setString(2,"CASH");
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1508,7 +1508,7 @@ private void displayDailySales(){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblreceipt where date=? and paymentMethod=?");
             dbConn.pstmt.setString(1, lblDate.getText());
             dbConn.pstmt.setString(2,"CARD");
             dbConn.rs = dbConn.pstmt.executeQuery();
@@ -1522,7 +1522,7 @@ private void displayDailySales(){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         try{
-            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblReceipt where date=? and paymentMethod=?");
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(bdPrice) from tblreceipt where date=? and paymentMethod=?");
             dbConn.pstmt.setString(1, lblDate.getText());
             dbConn.pstmt.setString(2,"FOC");
             dbConn.rs = dbConn.pstmt.executeQuery();
