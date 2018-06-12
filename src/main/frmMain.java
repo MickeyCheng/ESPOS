@@ -73,7 +73,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void disableAll(){
         btnCashiering.setEnabled(false);
-        btnCashiering1.setEnabled(false);
+        btnCustomer.setEnabled(false);
         btnExpenses.setEnabled(false);
         btnLPO.setEnabled(false);
         btnLogOut.setEnabled(false);
@@ -87,7 +87,7 @@ dbConnection dbConn = new dbConnection();
     }
     private void enableAll(){
         btnCashiering.setEnabled(true);
-        btnCashiering1.setEnabled(true);
+        btnCustomer.setEnabled(true);
         btnExpenses.setEnabled(true);
         btnLPO.setEnabled(true);
         btnLogOut.setEnabled(true);
@@ -137,7 +137,7 @@ dbConnection dbConn = new dbConnection();
         btnStockAdjust = new javax.swing.JButton();
         btnLPO = new javax.swing.JButton();
         btnCashiering = new javax.swing.JButton();
-        btnCashiering1 = new javax.swing.JButton();
+        btnCustomer = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         btnExpenses = new javax.swing.JButton();
         btnReceipt = new javax.swing.JButton();
@@ -214,14 +214,16 @@ dbConnection dbConn = new dbConnection();
         });
         jPanel2.add(btnCashiering, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 240, 100));
 
-        btnCashiering1.setBackground(new java.awt.Color(255, 255, 255));
-        btnCashiering1.setForeground(new java.awt.Color(0, 0, 0));
-        btnCashiering1.addActionListener(new java.awt.event.ActionListener() {
+        btnCustomer.setBackground(new java.awt.Color(255, 255, 255));
+        btnCustomer.setForeground(new java.awt.Color(0, 0, 0));
+        btnCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/DefaultImages/customerIcon.png"))); // NOI18N
+        btnCustomer.setText("CUSTOMER");
+        btnCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCashiering1ActionPerformed(evt);
+                btnCustomerActionPerformed(evt);
             }
         });
-        jPanel2.add(btnCashiering1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 450, 240, 100));
+        jPanel2.add(btnCustomer, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 450, 240, 100));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 260, 670));
 
@@ -371,9 +373,10 @@ dbConnection dbConn = new dbConnection();
         obj.setVisible(true);
     }//GEN-LAST:event_btnUserSecurityActionPerformed
 
-    private void btnCashiering1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCashiering1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCashiering1ActionPerformed
+    private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerActionPerformed
+        frmCustomer obj = new frmCustomer();
+        obj.setVisible(true);
+    }//GEN-LAST:event_btnCustomerActionPerformed
 
     /**
      * @param args the command line arguments
@@ -412,7 +415,7 @@ dbConnection dbConn = new dbConnection();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCashiering;
-    private javax.swing.JButton btnCashiering1;
+    private javax.swing.JButton btnCustomer;
     private javax.swing.JButton btnExpenses;
     private javax.swing.JButton btnLPO;
     private javax.swing.JButton btnLogOut;

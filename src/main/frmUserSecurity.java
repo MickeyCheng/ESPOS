@@ -511,6 +511,7 @@ String checkProduct,checkSupplier,checkLpo,checkInventory,
                 dbConn.pstmt.setString(11,dbConn.LoggedInUser );
                 dbConn.pstmt.setString(12, dbConn.sdfDateGlobal.format(dbConn.todayDateGlobal));
                 dbConn.pstmt.setString(13, cmbUserName.getSelectedItem().toString());
+                dbConn.saveAuditTrail("UPDATED USER ACCESS: " + cmbUserName.getSelectedItem().toString());
                 dbConn.pstmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Acccess Level Saved");
             }catch(SQLException e){

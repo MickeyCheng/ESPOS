@@ -1,5 +1,6 @@
 
 package main;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -18,11 +19,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import static main.frmLogin.showUserName;
+import net.proteanit.sql.DbUtils;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -39,8 +42,9 @@ ResultSet rs;
 PreparedStatement pstmt;
 int iChecker =0, row, ba, getTransactionID;
 DecimalFormat df = new DecimalFormat("#.000");
-double showAmountPaid;
+double showAmountPaid, GetCustomerPoints;
 int getMaxAuditID;
+boolean addCustomer=false,UseCustPoints=false;
 SimpleDateFormat sdfAudit = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
 int qty;
 String getPaymentMethod;
@@ -50,6 +54,8 @@ dbConnection dbConn = new dbConnection();
         dbConn.doConnect();
         sortTable();
         runningTime();
+        fillTableCustomer();
+        lblCustomerCode.setVisible(false);
 //        btnCash.setText("<html><center>CASH <br> PAYMENT</html>");
 //        btnNew.setText("<html><center>NEW <br>TRANSACTION</html>");
         txtSearch.requestFocus();
@@ -63,6 +69,7 @@ dbConnection dbConn = new dbConnection();
         lblDailyCash.setVisible(false);
         lblDailyCard.setVisible(false);
         lblDailyFoc.setVisible(false);
+        tableCustomer.setAutoCreateRowSorter(true);
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {listenSearch();}
@@ -71,7 +78,52 @@ dbConnection dbConn = new dbConnection();
             @Override
             public void changedUpdate(DocumentEvent e) {listenSearch();}
         });          
+        txtSearchCustomer.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {listenSearchCustomer();}
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {listenSearchCustomer();}
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {listenSearchCustomer();}
+        });
         fillFavorites();
+    }
+    private void SetCustTableHeader(){
+        tableCustomer.getColumnModel().getColumn(0).setHeaderValue("ID");
+        tableCustomer.getColumnModel().getColumn(1).setHeaderValue("NAME");
+        tableCustomer.getColumnModel().getColumn(2).setHeaderValue("CPR");
+        tableCustomer.getColumnModel().getColumn(3).setHeaderValue("CONTACT");
+        tableCustomer.getColumnModel().getColumn(4).setHeaderValue("POINTS");
+    }
+    private void listenSearchCustomer(){
+     try{
+         String searchSQL = "Select cu_seqno,cu_name,cu_cpr,cu_contact from tblcustomer where "
+                 + "cu_name like ? OR cu_cpr like ? or cu_contact like ?";
+         dbConn.pstmt = dbConn.conn.prepareStatement(searchSQL);
+         dbConn.pstmt.setString(1, "%"+txtSearchCustomer.getText()+"%");
+         dbConn.pstmt.setString(2, "%"+txtSearchCustomer.getText()+"%");
+         dbConn.pstmt.setString(3, "%"+txtSearchCustomer.getText()+"%");
+         dbConn.rs = dbConn.pstmt.executeQuery();
+         tableCustomer.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+         dbConn.pstmt.close();
+         SetCustTableHeader();
+     }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+     }
+    }
+      private void fillTableCustomer(){
+        try{
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select cu_seqno,cu_name,cu_cpr,cu_contact,cu_points"
+                    + " from tblcustomer order by cu_name");
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            tableCustomer.setModel(DbUtils.resultSetToTableModel(dbConn.rs));
+            dbConn.pstmt.close();
+            SetCustTableHeader();
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
     }
     private void getNextAuditID(){
         try{
@@ -493,6 +545,21 @@ dbConnection dbConn = new dbConnection();
         btnFav12 = new javax.swing.JButton();
         lblTime = new javax.swing.JLabel();
         lblDate = new javax.swing.JLabel();
+        jPanel9 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tableCustomer = new javax.swing.JTable();
+        lblCustomer = new javax.swing.JLabel();
+        lblContact = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        lblCpr = new javax.swing.JLabel();
+        txtSearchCustomer = new javax.swing.JTextField();
+        btncustomer = new javax.swing.JButton();
+        lblCustomerCode = new javax.swing.JLabel();
+        lblPoints = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        btnCustPoints = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -511,6 +578,7 @@ dbConnection dbConn = new dbConnection();
         jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel4.setBackground(new java.awt.Color(214, 214, 194));
+        jPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         intFrameFoc.setBackground(new java.awt.Color(214, 214, 194));
@@ -544,7 +612,7 @@ dbConnection dbConn = new dbConnection();
 
         intFrameFoc.getContentPane().add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 450, 100));
 
-        jPanel4.add(intFrameFoc, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 30, 480, 140));
+        jPanel4.add(intFrameFoc, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 480, 140));
 
         intFrameCard.setBackground(new java.awt.Color(214, 214, 194));
         intFrameCard.setVisible(true);
@@ -588,7 +656,7 @@ dbConnection dbConn = new dbConnection();
         });
         jPanel6.add(btnCancelCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 90, 190, 40));
 
-        intFrameCard.getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 450, 160));
+        intFrameCard.getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 450, 160));
 
         jPanel4.add(intFrameCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 490, 210));
 
@@ -597,24 +665,24 @@ dbConnection dbConn = new dbConnection();
         lblChange.setForeground(new java.awt.Color(255, 255, 255));
         lblChange.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblChange.setOpaque(true);
-        jPanel4.add(lblChange, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 190, 160, 40));
+        jPanel4.add(lblChange, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 130, 160, 40));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("AMOUNT PAID:");
-        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 10, 130, 30));
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 0, 130, 30));
 
         bd3.setBackground(new java.awt.Color(255, 255, 255));
         bd3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         bd3.setForeground(new java.awt.Color(0, 0, 0));
-        bd3.setText("BD 3");
+        bd3.setText("BD 10");
         bd3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bd3ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd3, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 80, 90, 50));
+        jPanel4.add(bd3, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 70, 90, 50));
 
         bd500.setBackground(new java.awt.Color(255, 255, 255));
         bd500.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -625,7 +693,7 @@ dbConnection dbConn = new dbConnection();
                 bd500ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd500, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 20, 90, 50));
+        jPanel4.add(bd500, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 10, 90, 50));
 
         bd1.setBackground(new java.awt.Color(255, 255, 255));
         bd1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -636,51 +704,51 @@ dbConnection dbConn = new dbConnection();
                 bd1ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 80, 100, 50));
+        jPanel4.add(bd1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 70, 100, 50));
 
         bd2.setBackground(new java.awt.Color(255, 255, 255));
         bd2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         bd2.setForeground(new java.awt.Color(0, 0, 0));
-        bd2.setText("BD 2");
+        bd2.setText("BD 5");
         bd2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bd2ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd2, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 80, 80, 50));
+        jPanel4.add(bd2, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 70, 80, 50));
 
         bd20.setBackground(new java.awt.Color(255, 255, 255));
         bd20.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         bd20.setForeground(new java.awt.Color(0, 0, 0));
-        bd20.setText("BD 20");
+        bd20.setText("BD 100");
         bd20.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bd20ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd20, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 140, 90, 50));
+        jPanel4.add(bd20, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 130, 90, 50));
 
         bd5.setBackground(new java.awt.Color(255, 255, 255));
         bd5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         bd5.setForeground(new java.awt.Color(0, 0, 0));
-        bd5.setText("BD 5");
+        bd5.setText("BD 20");
         bd5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bd5ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd5, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 140, 100, 50));
+        jPanel4.add(bd5, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 130, 100, 50));
 
         bd10.setBackground(new java.awt.Color(255, 255, 255));
         bd10.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         bd10.setForeground(new java.awt.Color(0, 0, 0));
-        bd10.setText("BD 10");
+        bd10.setText("BD 50");
         bd10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bd10ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd10, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 140, 80, 50));
+        jPanel4.add(bd10, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 130, 80, 50));
 
         btnCash.setBackground(new java.awt.Color(255, 255, 255));
         btnCash.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -694,50 +762,50 @@ dbConnection dbConn = new dbConnection();
                 btnCashActionPerformed(evt);
             }
         });
-        jPanel4.add(btnCash, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 20, 70, 70));
+        jPanel4.add(btnCash, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 10, 70, 70));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("BD");
-        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 190, 30, 40));
+        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 130, 30, 40));
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("BD");
-        jPanel4.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 50, 30, 40));
+        jPanel4.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 40, 30, 40));
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("CHANGE:");
-        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 150, 200, 30));
+        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 90, 200, 30));
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel9.setText("TOTAL AMOUNT:");
-        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, 30));
+        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 140, 30));
 
         txtAmountPaid.setBackground(new java.awt.Color(0, 102, 0));
         txtAmountPaid.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         txtAmountPaid.setForeground(new java.awt.Color(255, 255, 255));
         txtAmountPaid.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         txtAmountPaid.setOpaque(true);
-        jPanel4.add(txtAmountPaid, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, 90, 40));
+        jPanel4.add(txtAmountPaid, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 40, 90, 40));
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel10.setText("BD");
-        jPanel4.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 30, 40));
+        jPanel4.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 30, 40));
 
         lblTotalAmount.setBackground(new java.awt.Color(153, 153, 153));
         lblTotalAmount.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblTotalAmount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblTotalAmount.setOpaque(true);
-        jPanel4.add(lblTotalAmount, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 50, 90, 40));
+        jPanel4.add(lblTotalAmount, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 90, 40));
 
         bd100.setBackground(new java.awt.Color(255, 255, 255));
         bd100.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -748,7 +816,7 @@ dbConnection dbConn = new dbConnection();
                 bd100ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd100, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 20, 80, 50));
+        jPanel4.add(bd100, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 10, 80, 50));
 
         btnClear.setBackground(new java.awt.Color(255, 255, 255));
         btnClear.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -759,7 +827,7 @@ dbConnection dbConn = new dbConnection();
                 btnClearActionPerformed(evt);
             }
         });
-        jPanel4.add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 200, 310, 30));
+        jPanel4.add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 190, 310, 30));
 
         bd50.setBackground(new java.awt.Color(255, 255, 255));
         bd50.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -770,7 +838,7 @@ dbConnection dbConn = new dbConnection();
                 bd50ActionPerformed(evt);
             }
         });
-        jPanel4.add(bd50, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, 100, 50));
+        jPanel4.add(bd50, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 10, 100, 50));
 
         btnCard.setBackground(new java.awt.Color(255, 255, 255));
         btnCard.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -784,7 +852,7 @@ dbConnection dbConn = new dbConnection();
                 btnCardActionPerformed(evt);
             }
         });
-        jPanel4.add(btnCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 100, 70, 70));
+        jPanel4.add(btnCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 90, 70, 70));
 
         btnFoc.setBackground(new java.awt.Color(255, 255, 255));
         btnFoc.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -798,11 +866,12 @@ dbConnection dbConn = new dbConnection();
                 btnFocActionPerformed(evt);
             }
         });
-        jPanel4.add(btnFoc, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 180, 70, 70));
+        jPanel4.add(btnFoc, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, 70, 70));
 
-        jPanel5.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, 830, 260));
+        jPanel5.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 190, 690, 250));
 
         jPanel2.setBackground(new java.awt.Color(214, 214, 194));
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnPrintLastReceipt.setBackground(new java.awt.Color(255, 255, 255));
@@ -886,9 +955,10 @@ dbConnection dbConn = new dbConnection();
         lblDailyCard.setText("card");
         jPanel2.add(lblDailyCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 370, -1, -1));
 
-        jPanel5.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 260, 530, 420));
+        jPanel5.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 450, 530, 230));
 
         jPanel3.setBackground(new java.awt.Color(214, 214, 194));
+        jPanel3.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 3, 14)); // NOI18N
@@ -954,9 +1024,10 @@ dbConnection dbConn = new dbConnection();
         });
         jPanel3.add(btnEnter, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 420, 30));
 
-        jPanel5.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 460, 240));
+        jPanel5.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 580, 240));
 
         jPanel1.setBackground(new java.awt.Color(214, 214, 194));
+        jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tableInvoice.setBackground(new java.awt.Color(214, 214, 194));
@@ -1122,6 +1193,84 @@ dbConnection dbConn = new dbConnection();
         lblDate.setOpaque(true);
         jPanel5.add(lblDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 590, 160, 40));
 
+        jPanel9.setBackground(new java.awt.Color(214, 214, 194));
+        jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(153, 153, 153)));
+        jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tableCustomer.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tableCustomer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableCustomerMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tableCustomer);
+
+        jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 320, 110));
+
+        lblCustomer.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel9.add(lblCustomer, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 30, 230, 20));
+
+        lblContact.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel9.add(lblContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 130, 230, 30));
+
+        jLabel17.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel17.setText("Contact:");
+        jPanel9.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 110, 50, -1));
+
+        jLabel18.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel18.setText("Customer Name:");
+        jPanel9.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 10, -1, -1));
+
+        jLabel19.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel19.setText("Points:");
+        jPanel9.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 60, 50, -1));
+
+        lblCpr.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel9.add(lblCpr, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 80, 110, 20));
+        jPanel9.add(txtSearchCustomer, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 320, 30));
+
+        btncustomer.setBackground(new java.awt.Color(255, 255, 255));
+        btncustomer.setForeground(new java.awt.Color(0, 0, 0));
+        btncustomer.setText("Select");
+        btncustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncustomerActionPerformed(evt);
+            }
+        });
+        jPanel9.add(btncustomer, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 80, 60));
+
+        lblCustomerCode.setText("jLabel14");
+        jPanel9.add(lblCustomerCode, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 0, -1, -1));
+
+        lblPoints.setText("jLabel14");
+        jPanel9.add(lblPoints, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 80, 130, 20));
+
+        jLabel20.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel20.setText("CPR:");
+        jPanel9.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 60, 50, -1));
+
+        btnCustPoints.setBackground(new java.awt.Color(255, 255, 255));
+        btnCustPoints.setForeground(new java.awt.Color(0, 0, 0));
+        btnCustPoints.setText("Use Points");
+        btnCustPoints.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCustPointsActionPerformed(evt);
+            }
+        });
+        jPanel9.add(btnCustPoints, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 90, 80, 60));
+
+        jPanel5.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 690, 170));
+
         getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 1320, 690));
 
         jMenu1.setText("File");
@@ -1241,7 +1390,7 @@ dbConnection dbConn = new dbConnection();
     }//GEN-LAST:event_btnEnterActionPerformed
 
     private void bd20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bd20ActionPerformed
-    showAmountPaid +=20.000;
+    showAmountPaid +=100.000;
     txtAmountPaid.setText(String.valueOf(df.format(showAmountPaid)));       
     }//GEN-LAST:event_bd20ActionPerformed
 
@@ -1256,22 +1405,22 @@ dbConnection dbConn = new dbConnection();
     }//GEN-LAST:event_bd1ActionPerformed
 
     private void bd2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bd2ActionPerformed
-    showAmountPaid +=2.000;
+    showAmountPaid +=5.000;
     txtAmountPaid.setText(String.valueOf(df.format(showAmountPaid)));
     }//GEN-LAST:event_bd2ActionPerformed
 
     private void bd3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bd3ActionPerformed
-    showAmountPaid +=3.000;
+    showAmountPaid +=10.000;
     txtAmountPaid.setText(String.valueOf(df.format(showAmountPaid)));   
     }//GEN-LAST:event_bd3ActionPerformed
 
     private void bd5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bd5ActionPerformed
-    showAmountPaid +=5.000;
+    showAmountPaid +=20.000;
     txtAmountPaid.setText(String.valueOf(df.format(showAmountPaid)));
     }//GEN-LAST:event_bd5ActionPerformed
 
     private void bd10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bd10ActionPerformed
-    showAmountPaid +=10.00;
+    showAmountPaid +=50.00;
     txtAmountPaid.setText(String.valueOf(df.format(showAmountPaid)));
     }//GEN-LAST:event_bd10ActionPerformed
 private void clearTexts(){
@@ -1284,106 +1433,190 @@ private void clearTexts(){
     txtQuantity.setText("");
     txtSearch.setText("");
     
-}private void saveReceipt(){
-   if (getPaymentMethod.equals("CASH")){
-    try{
-        String saveReceiptSQL = "INSERT INTO tblreceipt"
-                + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,amountPaid,amountChange,cashier,date,time,paymentMethod)"
-                + "values(?,?,?,?,?,?,?,?,?,?,?,?)";
-        for(int i=0; i<tableInvoice.getRowCount();i++){
-        dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
-        dbConn.pstmt.setInt(1,getTransactionID);
-        dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
-        dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
-        dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
-        dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
-        dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
-        dbConn.pstmt.setDouble(7, Double.valueOf(txtAmountPaid.getText()));
-        dbConn.pstmt.setDouble(8,Double.valueOf(lblChange.getText()));
-        dbConn.pstmt.setString(9,frmLogin.showUserName);
-        dbConn.pstmt.setString(10,lblDate.getText());
-        dbConn.pstmt.setString(11,lblTime.getText());
-        dbConn.pstmt.setString(12,getPaymentMethod);
-        dbConn.pstmt.execute();
-        dbConn.pstmt.close();
-        }
-        saveAuditTrail("CASH TRANSACTION: " + String.valueOf(getTransactionID));
-    }catch(SQLException e){
-        JOptionPane.showMessageDialog(null, e.getMessage());
-    }
-   }else if(getPaymentMethod.equals("CARD")){
-    try{
-        String saveReceiptSQL = "INSERT INTO tblreceipt"
-                + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,"
-                + "amountPaid,amountChange,cashier,date,time,paymentMethod,cardNumber,"
-                + "cardReference)"
-                + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        for(int i=0; i<tableInvoice.getRowCount();i++){
-        dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
-        dbConn.pstmt.setInt(1,getTransactionID);
-        dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
-        dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
-        dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
-        dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
-        dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
-        dbConn.pstmt.setDouble(7, Double.valueOf(lblTotalAmount.getText()));
-        dbConn.pstmt.setDouble(8,0.0);
-        dbConn.pstmt.setString(9,frmLogin.showUserName);
-        dbConn.pstmt.setString(10,lblDate.getText());
-        dbConn.pstmt.setString(11,lblTime.getText());
-        dbConn.pstmt.setString(12,getPaymentMethod);
-        dbConn.pstmt.setString(13, txtCardNumber.getText());
-        dbConn.pstmt.setString(14, txtCardReference.getText());
-        dbConn.pstmt.execute();
-        dbConn.pstmt.close();
-        }
-        saveAuditTrail("CARD TRANSACTION: " + String.valueOf(getTransactionID));
-    }catch(SQLException e){
-        JOptionPane.showMessageDialog(this, e.getMessage());
-    }
-   }else if(getPaymentMethod.equals("FOC")){
-    try{
-        String saveReceiptSQL = "INSERT INTO tblreceipt"
-                + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,"
-                + "amountPaid,amountChange,cashier,date,time,paymentMethod,focComment)"
-                + "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        for(int i=0; i<tableInvoice.getRowCount();i++){
-        dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
-        dbConn.pstmt.setInt(1,getTransactionID);
-        dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
-        dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
-        dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
-        dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
-        dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
-        dbConn.pstmt.setDouble(7, 0.000);
-        dbConn.pstmt.setDouble(8,0.0000);
-        dbConn.pstmt.setString(9,frmLogin.showUserName);
-        dbConn.pstmt.setString(10,lblDate.getText());
-        dbConn.pstmt.setString(11,lblTime.getText());
-        dbConn.pstmt.setString(12,getPaymentMethod);
-        dbConn.pstmt.setString(13, txtComment.getText());
-        dbConn.pstmt.execute();
-        dbConn.pstmt.close();
-        }
-        saveAuditTrail("FOC TRANSACTION: " + String.valueOf(getTransactionID));
-    }catch(SQLException e){
-        JOptionPane.showMessageDialog(this, e.getMessage());
-    }
+}
+private void saveReceipt(){
+    double MinusPoints;
+   if (UseCustPoints == true){
+       MinusPoints = Double.valueOf(txtAmountPaid.getText()) - Double.valueOf(lblPoints.getText());
+   }else{
+       MinusPoints = Double.valueOf(txtAmountPaid.getText());
    }
-    //UPDATE STOCK QTY
-    try{
-        String deductStockOnHand = "UPDATE tblproduct set stockOnhand=stockOnhand-? where productId=?";
-        dbConn.pstmt = dbConn.conn.prepareStatement(deductStockOnHand);
-        DefaultTableModel model = (DefaultTableModel)tableInvoice.getModel();
-        for(int j=0; j<model.getRowCount();j++){
-            dbConn.pstmt.setInt(1,Integer.valueOf(model.getValueAt(j, 3).toString()));
-            dbConn.pstmt.setString(2,model.getValueAt(j, 0).toString());
-            dbConn.pstmt.executeUpdate();
+        if (getPaymentMethod.equals("CASH")){
+        try{
+            String saveReceiptSQL = "INSERT INTO tblreceipt"
+                    + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,amountPaid,amountChange,cashier,date,time,paymentMethod)"
+                    + "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+            for(int i=0; i<tableInvoice.getRowCount();i++){
+            dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
+            dbConn.pstmt.setInt(1,getTransactionID);
+            dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
+            dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
+            dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
+            dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
+            dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
+            dbConn.pstmt.setDouble(7, Double.valueOf(df.format(MinusPoints)));
+            dbConn.pstmt.setDouble(8,Double.valueOf(lblChange.getText()));
+            dbConn.pstmt.setString(9,frmLogin.showUserName);
+            dbConn.pstmt.setString(10,lblDate.getText());
+            dbConn.pstmt.setString(11,lblTime.getText());
+            dbConn.pstmt.setString(12,getPaymentMethod);
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
+            }
+            saveAuditTrail("CASH TRANSACTION: " + String.valueOf(getTransactionID));
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }
+       }else if(getPaymentMethod.equals("CARD")){
+        try{
+            String saveReceiptSQL = "INSERT INTO tblreceipt"
+                    + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,"
+                    + "amountPaid,amountChange,cashier,date,time,paymentMethod,cardNumber,"
+                    + "cardReference)"
+                    + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            for(int i=0; i<tableInvoice.getRowCount();i++){
+            dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
+            dbConn.pstmt.setInt(1,getTransactionID);
+            dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
+            dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
+            dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
+            dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
+            dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
+            dbConn.pstmt.setDouble(7, Double.valueOf(lblTotalAmount.getText()));
+            dbConn.pstmt.setDouble(8,0.0);
+            dbConn.pstmt.setString(9,frmLogin.showUserName);
+            dbConn.pstmt.setString(10,lblDate.getText());
+            dbConn.pstmt.setString(11,lblTime.getText());
+            dbConn.pstmt.setString(12,getPaymentMethod);
+            dbConn.pstmt.setString(13, txtCardNumber.getText());
+            dbConn.pstmt.setString(14, txtCardReference.getText());
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
+            }
+            saveAuditTrail("CARD TRANSACTION: " + String.valueOf(getTransactionID));
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+       }else if(getPaymentMethod.equals("FOC")){
+        try{
+            String saveReceiptSQL = "INSERT INTO tblreceipt"
+                    + "(transactionId,productName,quantity,unitPrice,bdPrice,totalAmount,"
+                    + "amountPaid,amountChange,cashier,date,time,paymentMethod,focComment)"
+                    + "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            for(int i=0; i<tableInvoice.getRowCount();i++){
+            dbConn.pstmt =dbConn.conn.prepareStatement(saveReceiptSQL);
+            dbConn.pstmt.setInt(1,getTransactionID);
+            dbConn.pstmt.setString(2,tableInvoice.getValueAt(i, 1).toString());
+            dbConn.pstmt.setInt(3,Integer.valueOf(tableInvoice.getValueAt(i, 3).toString()));
+            dbConn.pstmt.setDouble(4,Double.valueOf(tableInvoice.getValueAt(i, 2).toString()));
+            dbConn.pstmt.setDouble(5,Double.valueOf(tableInvoice.getValueAt(i, 4).toString()));
+            dbConn.pstmt.setDouble(6, Double.valueOf(lblTotalAmount.getText()));
+            dbConn.pstmt.setDouble(7, 0.000);
+            dbConn.pstmt.setDouble(8,0.0000);
+            dbConn.pstmt.setString(9,frmLogin.showUserName);
+            dbConn.pstmt.setString(10,lblDate.getText());
+            dbConn.pstmt.setString(11,lblTime.getText());
+            dbConn.pstmt.setString(12,getPaymentMethod);
+            dbConn.pstmt.setString(13, txtComment.getText());
+            dbConn.pstmt.execute();
+            dbConn.pstmt.close();
+            }
+            saveAuditTrail("FOC TRANSACTION: " + String.valueOf(getTransactionID));
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+       }
+        //UPDATE STOCK QTY
+        try{
+            String deductStockOnHand = "UPDATE tblproduct set stockOnhand=stockOnhand-? where productId=?";
+            dbConn.pstmt = dbConn.conn.prepareStatement(deductStockOnHand);
+            DefaultTableModel model = (DefaultTableModel)tableInvoice.getModel();
+            for(int j=0; j<model.getRowCount();j++){
+                dbConn.pstmt.setInt(1,Integer.valueOf(model.getValueAt(j, 3).toString()));
+                dbConn.pstmt.setString(2,model.getValueAt(j, 0).toString());
+                dbConn.pstmt.executeUpdate();
+            }
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+        //add customer points
+        if (addCustomer == true){
+            GetCustPointsMethod();
+            double GetNetAmount = Double.valueOf(lblTotalAmount.getText());
+            //1 percent .01
+    //        double ConvertCustPoints;
+    //        ConvertCustPoints = GetNetAmount / 0.01;
+            GetCustomerPoints +=GetNetAmount * 0.01; 
+            try{
+                dbConn.pstmt = dbConn.conn.prepareStatement("update tblcustomer set cu_points=? where cu_seqno=?");
+                dbConn.pstmt.setDouble(1, Double.valueOf(dbConn.dfGlobal.format(GetCustomerPoints)));
+                dbConn.pstmt.setString(2, lblCustomerCode.getText());
+                dbConn.pstmt.executeUpdate();
+                dbConn.pstmt.close();
+            }catch(SQLException e){
+               JOptionPane.showMessageDialog(this, "Customer Points");
+            }
+            
+        }
+       if (UseCustPoints==true){
+           customerTransaction("Customer Used Points", Double.valueOf(lblPoints.getText()));
+           //save points used in tblreceipt
+           try{
+            dbConn.pstmt= dbConn.conn.prepareStatement("update tblReceipt set re_ptsused=? where transactionId=?");
+            dbConn.pstmt.setDouble(1, Double.valueOf(lblPoints.getText()));
+            dbConn.pstmt.setInt(2, getTransactionID);
+            dbConn.pstmt.executeUpdate();
+            dbConn.pstmt.close();
+           }catch(SQLException e){
+               JOptionPane.showMessageDialog(this, e.getMessage());
+           }
+           //reset points
+           try{
+               dbConn.pstmt= dbConn.conn.prepareStatement("update tblcustomer set cu_points=? where cu_seqno=?");
+                dbConn.pstmt.setDouble(1, 0.0);
+                dbConn.pstmt.setString(2, lblCustomerCode.getText());
+                dbConn.pstmt.executeUpdate();
+                dbConn.pstmt.close();
+           }catch(SQLException e){
+               JOptionPane.showMessageDialog(this, e.getMessage());
+           }
+       }
+       if (addCustomer==true && UseCustPoints ==false){
+            customerTransaction("Added Customer Points", Double.valueOf(dbConn.dfGlobal.format(GetCustomerPoints)));
+       }
+       addCustomer=false;
+       UseCustPoints=false;
+       fillTableCustomer();
+}
+private void customerTransaction(String getTransaction, double getPtsUsed){
+            try{
+                dbConn.pstmt = dbConn.conn.prepareStatement("insert into tblcustomertransaction (ct_name,ct_id,ct_transaction,ct_ptsused,ct_date,ct_addby)"
+                        + " values (?,?,?,?,?,?)");
+                dbConn.pstmt.setString(1, lblCustomer.getText());
+                dbConn.pstmt.setString(2, lblCustomerCode.getText());
+                dbConn.pstmt.setString(3, getTransaction);
+                dbConn.pstmt.setDouble(4, getPtsUsed);
+                dbConn.pstmt.setString(5, dbConn.sdfDateGlobal.format(new Date()));
+                dbConn.pstmt.setString(6, frmLogin.showUserName);
+                dbConn.pstmt.execute();
+                dbConn.pstmt.close();
+            }catch(SQLException e){
+                JOptionPane.showMessageDialog(this, "Customer Transaction");
+            }
+}
+private void GetCustPointsMethod(){
+    try{
+        dbConn.SQLQuery = "Select cu_points from tblcustomer where cu_seqno =?";
+        dbConn.pstmt = dbConn.conn.prepareStatement(dbConn.SQLQuery);
+        dbConn.pstmt.setString(1, lblCustomerCode.getText());
+        dbConn.rs = dbConn.pstmt.executeQuery();
+        if (dbConn.rs.next()){
+            GetCustomerPoints = dbConn.rs.getDouble("cu_points");
+        }
+        dbConn.pstmt.close();
     }catch(SQLException e){
         JOptionPane.showMessageDialog(this, e.getMessage());
     }
-    
 }
 private void checkTransactionId(){
     try{
@@ -1444,7 +1677,7 @@ private void checkTransactionId(){
         try{
             dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbesposbeta","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repAllReceipt.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
             JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
@@ -1472,15 +1705,28 @@ private void checkTransactionId(){
     }//GEN-LAST:event_btnClearActionPerformed
 
     private void btnPrintLastReceiptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintLastReceiptActionPerformed
+        double ptsUsed=0.0;
+        try{
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select * from tblreceipt where transactionId=?");
+            dbConn.pstmt.setInt(1, getTransactionID);
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                ptsUsed = dbConn.rs.getDouble("re_ptsused");
+            }
+            dbConn.pstmt.close();
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
         Map param = new HashMap();
         param.put("tranId", getTransactionID);
+        param.put("pointsUsed", String.valueOf(ptsUsed));
         try{
             dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbesposbeta","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repReceipt.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
-            JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
             JasperViewer.viewReport(jp,false);
             dbConn.doConnect();
         }catch(ClassNotFoundException | SQLException | JRException e){
@@ -1537,17 +1783,30 @@ private void displayDailySales(){
         }
     }
     private void jButton112ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton112ActionPerformed
+        double getPointsSum = 0.0;
+        try{
+            dbConn.pstmt = dbConn.conn.prepareStatement("Select sum(re_ptsused) from tblreceipt where date=?");
+            dbConn.pstmt.setString(1, String.valueOf(dbConn.sdfDateGlobal.format(new Date())));
+            dbConn.rs = dbConn.pstmt.executeQuery();
+            if (dbConn.rs.next()){
+                getPointsSum = dbConn.rs.getDouble(1);
+            }
+            dbConn.pstmt.close();
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
         displayDailySales();
         Map param = new HashMap();
         param.put("date", lblDate.getText());
         param.put("cardSales", lblDailyCard.getText());
         param.put("cashSales", lblDailyCash.getText());
         param.put("focData", lblDailyFoc.getText());
+        param.put("showPoints",String.valueOf(getPointsSum));
         saveAuditTrail("VIEWED SALES REPORT FOR: " + lblDate.getText());
         try{
             dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbesposbeta","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repSalesSummary.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
             JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
@@ -1564,7 +1823,7 @@ private void displayDailySales(){
         try{
             dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbesposbeta","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repCurrentStock.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
             JasperPrint jp = JasperFillManager.fillReport(jr, param,conn);
@@ -1603,6 +1862,7 @@ private void displayDailySales(){
 
     private void btnCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCardActionPerformed
         intFrameCard.setVisible(true);
+        intFrameCard.toFront();
     }//GEN-LAST:event_btnCardActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -1733,6 +1993,30 @@ private void displayDailySales(){
         txtSearch.setText(btnFav12.getText());
     }//GEN-LAST:event_btnFav12ActionPerformed
 
+    private void tableCustomerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCustomerMouseClicked
+        int row = tableCustomer.getSelectedRow();
+        int ba = tableCustomer.convertRowIndexToModel(row);
+        lblCustomer.setText(tableCustomer.getModel().getValueAt(ba, 1).toString());
+        lblCpr.setText(tableCustomer.getModel().getValueAt(ba, 2).toString());
+        lblContact.setText(tableCustomer.getModel().getValueAt(ba, 3).toString());
+        lblCustomerCode.setText(tableCustomer.getModel().getValueAt(ba, 0).toString());
+        double getPoints = Double.valueOf(tableCustomer.getModel().getValueAt(ba, 4).toString());
+        lblPoints.setText(String.valueOf(df.format(getPoints)));
+        
+    }//GEN-LAST:event_tableCustomerMouseClicked
+
+    private void btncustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncustomerActionPerformed
+        JOptionPane.showMessageDialog(this, "Transaction will be added to the Customer's record","Rewards Points",JOptionPane.INFORMATION_MESSAGE);
+        addCustomer = true;
+    }//GEN-LAST:event_btncustomerActionPerformed
+
+    private void btnCustPointsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustPointsActionPerformed
+        UseCustPoints = true;
+        double getPoints = Double.valueOf(lblPoints.getText());
+        showAmountPaid +=getPoints;
+        txtAmountPaid.setText(String.valueOf(df.format(showAmountPaid)));
+    }//GEN-LAST:event_btnCustPointsActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1783,6 +2067,7 @@ private void displayDailySales(){
     private javax.swing.JButton btnCard;
     private javax.swing.JButton btnCash;
     private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnCustPoints;
     private javax.swing.JButton btnEnter;
     private javax.swing.JButton btnFav1;
     private javax.swing.JButton btnFav10;
@@ -1803,6 +2088,7 @@ private void displayDailySales(){
     private javax.swing.JButton btnProcessCard1;
     private javax.swing.JButton btnRemoveItem;
     private javax.swing.JButton btnReportZ;
+    private javax.swing.JButton btncustomer;
     private javax.swing.JInternalFrame intFrameCard;
     private javax.swing.JInternalFrame intFrameFoc;
     private javax.swing.JButton jButton1;
@@ -1814,7 +2100,11 @@ private void displayDailySales(){
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1839,17 +2129,25 @@ private void displayDailySales(){
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblChange;
+    private javax.swing.JLabel lblContact;
+    private javax.swing.JLabel lblCpr;
+    private javax.swing.JLabel lblCustomer;
+    private javax.swing.JLabel lblCustomerCode;
     private javax.swing.JLabel lblDailyCard;
     private javax.swing.JLabel lblDailyCash;
     private javax.swing.JLabel lblDailyFoc;
     private javax.swing.JLabel lblDate;
+    private javax.swing.JLabel lblPoints;
     private javax.swing.JLabel lblProductId;
     private javax.swing.JLabel lblProductName;
     private javax.swing.JLabel lblTime;
     private javax.swing.JLabel lblTotalAmount;
     private javax.swing.JLabel lblUnitPrice;
+    private javax.swing.JTable tableCustomer;
     private javax.swing.JTable tableInvoice;
     private javax.swing.JLabel txtAmountPaid;
     private javax.swing.JTextField txtCardNumber;
@@ -1857,5 +2155,6 @@ private void displayDailySales(){
     private javax.swing.JTextField txtComment;
     private javax.swing.JTextField txtQuantity;
     private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextField txtSearchCustomer;
     // End of variables declaration//GEN-END:variables
 }

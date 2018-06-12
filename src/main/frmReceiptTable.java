@@ -377,7 +377,7 @@ private void fillTable(){
         try{
             dbConn.conn.close();
             Class.forName("com.mysql.jdbc.Driver");
-            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbpos","root","root");
+            dbConn.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbesposbeta","root","root");
             JasperDesign jd = JRXmlLoader.load(new File("src\\Reports\\repReceipt.jrxml"));
             JasperReport jr = JasperCompileManager.compileReport(jd);
             JasperPrint jp = JasperFillManager.fillReport(jr, param,dbConn.conn);
